@@ -1,0 +1,15 @@
+-- whoami
+Type whoami to print the user name currently logged in to the terminal session:
+
+
+Bash
+whoami
+flavio
+Note: this is different from the who am i command, which prints more information
+
+What is the difference it mentions at the bottom?
+Since the image cuts off that note, here is a quick breakdown of how they differ:
+
+whoami: Prints only the effective username of the current user session (e.g., flavio). It answers "What privileges am I operating under right now?" (If you use sudo su to switch to root, whoami will return root).
+
+who am i: Prints the user who originally logged into this terminal session, along with the terminal line (tty) and the login time. It answers "Who physically logged into this terminal terminal session?" (Even if you switch to root via sudo su, who am i will still show your original user account).

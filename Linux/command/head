@@ -1,0 +1,20 @@
+Here is the breakdown of the head command, which is typically the next step when you want to look inside the files you've been creating and moving:
+
+head
+The head command is used to view the beginning (the "head") of a text file directly inside the terminal. By default, it prints the first 10 lines of the specified file.
+
+Bash
+head notes.txt
+⚙️ Modifying the Output with Flags
+If you don't want exactly 10 lines, you can control how much text is shown using options:
+
+-n <number> (Specify Lines): Tells the command exactly how many lines from the top you want to read.
+
+Bash
+head -n 5 log.txt
+(This will display only the first 5 lines of log.txt).
+
+Short-hand Syntax: You can omit the -n flag entirely and just pass a hyphen followed by the number:
+
+Bash
+head -5 log.txt

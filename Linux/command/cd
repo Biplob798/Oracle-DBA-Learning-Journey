@@ -1,0 +1,22 @@
+cd
+Once you have a folder, you can move into it using the cd command. cd means change directory. You invoke it specifying a folder to move into. You can specify a folder name, or an entire path.
+
+Example:
+
+Bash
+mkdir fruits
+cd fruits
+Now you are into the fruits folder.
+
+You can use the .. special path to indicate the parent folder:
+
+Bash
+cd .. #back to the home folder
+Important cd Shortcuts to Know
+Navigating the filesystem becomes much faster once you know these special path shortcuts:
+
+cd (or cd ~): Takes you instantly back to your user's Home directory (e.g., /home/username or /Users/username), no matter where you currently are.
+
+cd -: Takes you back to the previous directory you were working in. It acts like a "back" button on a web browser, letting you toggle easily between two distant folders.
+
+cd /: Takes you all the way to the Root directory—the topmost folder of the entire system hierarchy.

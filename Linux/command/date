@@ -1,0 +1,33 @@
+date
+The date command displays the current system date, time, and time zone configuration.
+
+Bash
+date
+Sample Output: Sat Jun 27 23:01:25 +06 2026
+
+Formatting Output
+You can customize how date formats its output by using a plus sign (+) followed by format specifiers:
+
+Display only the date (YYYY-MM-DD):
+
+Bash
+date +%F
+Display standard clock time (HH:MM:SS):
+
+Bash
+date +%T
+Custom Layouts: You can combine specific layout components (like %Y for year, %m for month, %d for day) with regular text:
+
+Bash
+date +"Today is %Y-%m-%d"
+Redirection with date
+You can use the redirection operators (> and >>) to log timestamps to text files:
+
+Overwrite (>): Replaces the target file's contents entirely with the current timestamp. If the file doesn't exist, it creates it.
+
+Bash
+date > log.txt
+Append (>>): Adds the current timestamp as a new line at the very bottom of the file without altering existing data. Ideal for history logging.
+
+Bash
+date >> log.txt

@@ -1,0 +1,27 @@
+less
+The less command displays the content stored inside a text file inside an interactive UI, letting you read the data page-by-page.
+
+Bash
+less notes.txt
+Unlike cat, which dumps the entire file onto your terminal screen all at once, less does not read the entire file into memory before opening it. This makes it incredibly fast, even when opening multi-gigabyte log files.
+
+🕹️ Interactive UI Shortcuts
+When you open a file with less, your standard terminal prompt disappears, and you enter a pager view. Use these single-key shortcuts to navigate easily:
+
+Spacebar: Move forward one full page.
+
+b: Move backward one full page.
+
+Down Arrow or j: Scroll down one line.
+
+Up Arrow or k: Scroll up one line.
+
+g: Teleport instantly to the very beginning (top) of the file.
+
+G (Shift + g): Teleport instantly to the very end (bottom) of the file.
+
+/text: Search forward for the word "text". Press n to find the next match, or N for the previous match.
+
+h: Open the Help manual screen if you forget any shortcuts.
+
+q: Quit the viewer instantly and return to your normal terminal prompt.

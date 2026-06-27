@@ -1,0 +1,28 @@
+rm
+To delete files, you use the rm command, which stands for remove.
+
+Bash
+rm apple
+You can also delete multiple files at once by separating their names with spaces:
+
+Bash
+rm apple banana carrot
+Important Behavior & Crucial Flags
+Unlike a graphical user interface (like Windows Recycle Bin or macOS Trash), rm does not send files to a temporary trash folder. Once you hit enter on an rm command, the filesystem unlinks the file pointer instantly. For all practical purposes, the file is permanently gone.
+
+To handle directories or change how the command runs, you rely on these key flags:
+
+rm -r (Recursive): This is mandatory if you want to delete a directory that contains files or subfolders. It tells the terminal to descend into the folder hierarchy, delete all inner files first, and then remove the parent folder.
+
+Bash
+rm -r fruits
+rm -v (Verbose): Prints a visual log to your screen for every single file or directory as it is removed. This gives you concrete feedback on what just happened.
+
+rm -f (Force): Overrides minor write-protection prompts and completely ignores nonexistent files without throwing an error message.
+
+rm -i (Interactive): Plays it safe. The terminal will explicitly ask you for confirmation (y/n) before destroying a file. It is highly recommended if you are deleting files using wildcards (like rm -i *.log).
+
+Combining Flags for Maximum Power (And Risk)
+rm -rv: Deletes a directory recursively while printing out a step-by-step confirmation of everything it is removing.
+
+rm -rf: The nuclear option. It combines recursive and force behavior to instantly and silently vaporize a folder structure without asking a single question, even if files are marked as read-only. Always double-check your path before executing this.

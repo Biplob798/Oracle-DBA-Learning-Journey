@@ -1,0 +1,25 @@
+echo
+The echo command does one simple job: it prints to the output the argument passed to it.
+
+This example:
+
+Bash
+echo "hello"
+will print hello to the terminal.
+
+We can append the output to a file:
+
+Bash
+echo "hello" >> output.txt
+We can interpolate environment variables:
+
+Bash
+echo "The path variable is $PATH"
+💡 Extra Context on echo and Redirection
+Like we saw with the date command earlier, echo pairs perfectly with redirection operators:
+
+Overwrite (>): Wipes output.txt and sets its content exactly to "hello".
+
+Bash
+echo "hello" > output.txt
+Append (>>): Leaves the existing lines in output.txt completely alone and drops "hello" down as a brand-new line at the bottom. This is the classic way to quickly write code or configuration lines into a file without booting up a full text editor like nano or vim.

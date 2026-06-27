@@ -1,0 +1,29 @@
+cat
+Similar to tail in some way, we have cat. Except cat can also add content to a file, and this makes it super powerful.
+
+In its simplest usage, cat prints a file's content to the standard output:
+
+Bash
+cat file
+You can print the content of multiple files:
+
+Bash
+cat file1 file2
+and using the output redirection operator > you can concatenate the content of multiple files into a new...
+
+💡 Understanding the Full Power of cat
+The name cat is short for concatenate (which means linking things together in a chain). While it's most commonly used just to quickly view a file, its true strength comes from joining files or creating them.
+
+Here is how the cut-off part at the bottom of the slide works in practice:
+
+1. Concatenating (Merging) Files
+You can take the content of two separate files, merge them together sequentially, and save the result into a brand new third file:
+
+Bash
+cat file1 file2 > merged_file.txt
+2. Creating a File and Writing Directly to It
+If you run cat with the redirection operator but without specifying an input file, it will wait for you to type directly into the terminal:
+
+Bash
+cat > new_notes.txt
+How it works: After running this, the terminal will give you a blank line. Type whatever text you want. When you are finished, press Ctrl + D on a new line to save and close the file.

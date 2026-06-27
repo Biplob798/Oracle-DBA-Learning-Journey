@@ -1,0 +1,12 @@
+rmdir
+Just as you can create a folder using mkdir, you can delete a folder using rmdir:
+
+Bash
+mkdir fruits
+rmdir fruits
+You can also delete multiple folders at once:
+
+Bash
+mkdir fruits cars
+rmdir fruits cars
+The folder you delete must be empty.

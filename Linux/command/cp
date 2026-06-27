@@ -1,0 +1,21 @@
+cp
+You can copy a file using the cp command:
+
+Bash
+touch test
+cp apple another_apple
+(Note: The slide syntax example has a slight typo where it runs touch test but then copies a file named apple instead).
+
+To copy folders you need to add the -r option to recursively copy the whole folder contents:
+
+Bash
+mkdir fruits
+cp -r fruits cars
+💡 Clarification on How cp -r Works
+Just like rm -r, the -r flag here stands for recursive.
+
+When copying directories with cp -r source_folder target_folder, the behavior depends on whether the target exists:
+
+If cars does not exist: The system creates a new folder named cars and copies all files/folders from inside fruits directly into it.
+
+If cars already exists: The system copies the entire fruits folder inside the cars directory, resulting in the path cars/fruits/.

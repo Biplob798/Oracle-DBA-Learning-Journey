@@ -1,0 +1,17 @@
+tail
+The tail command is used to view the end (the "tail") of a text file directly inside the terminal. Just like head, it defaults to printing 10 lines, but it reads them from the very bottom of the file.
+
+Bash
+tail notes.txt
+⚙️ Modifying the Output with Flags
+-n <number> (Specify Lines): Controls exactly how many lines from the bottom you want to see.
+
+Bash
+tail -n 5 log.txt
+(Or use the shorthand tail -5 log.txt to display just the last 5 lines).
+
+-f (Follow/Live View): This is the single most powerful flag for tail. It keeps the file open in your terminal and actively watches it. Whenever new lines are appended to the file (like an application log recording events in real-time), they instantly stream onto your screen.
+
+Bash
+tail -f development.log
+(To exit this live-following mode and get your prompt back, press Ctrl + C).

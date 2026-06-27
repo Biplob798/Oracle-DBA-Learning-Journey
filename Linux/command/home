@@ -1,0 +1,7 @@
+The Home Directory
+/home contains a home folder for each user on the system. For example, my home folder is located at /home/colt
+
+Key Concepts About the Home Directory
+Multi-User Isolation: The layout ensures that individual users (like priya, colt, and lily shown in the diagram) have their own private workspaces. A standard user generally cannot modify or access files in another user's home directory without explicit permissions.
+
+The ~ (Tilde) Shortcut: In almost all Unix/Linux shells, the tilde symbol ~ is a built-in shortcut that points directly to your specific home directory. Running cd ~ or just cd instantly takes you back here.

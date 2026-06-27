@@ -1,0 +1,26 @@
+mv
+Once you have a file, you can move it around using the mv command. You specify the file current path, and its new path:
+
+Bash
+touch pear
+mv pear new_pear
+The pear file is now moved to new_pear. This is how you rename files and folders.
+
+If the last parameter is a folder, the file located at the first parameter path is going to be moved into that folder. In this case, you can specify a list of files and they will all be moved in the folder path identified by the last parameter:  
+
+💡 Visualizing the Two Ways to Use mv
+The mv command serves two distinct purposes in the terminal depending on your target parameter:  
+
+1. Renaming a File/Folder
+If the second argument is a name that doesn't exist yet, mv renames the item in place.
+
+Bash
+mv old_name.txt new_name.txt
+2. Moving Into a Directory
+If the final argument is an existing folder, mv shifts the source files directly into that folder.
+
+Bash
+mkdir fruits
+touch apple banana
+mv apple banana fruits/
+(Now apple and banana live inside the fruits folder).

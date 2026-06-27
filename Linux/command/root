@@ -1,0 +1,15 @@
+The Root Directory
+The starting point for the file system is the root folder. We call it the root, but its actual directory name is /
+
+Understanding the Standard Top-Level Directories
+The diagram shows a typical Unix/Linux hierarchical layout branching from the root /. Here is a quick reference for what those standard folders actually hold:
+
+/bin: Essential command binaries needed for all users (e.g., ls, cp, pwd).
+
+/home: Contains the personal home directories for regular users (like /home/priya or /home/lily), where they store their personal documents and settings.
+
+/root: The home directory specifically reserved for the superuser (Administrator), kept separate from normal user homes for security.
+
+/dev: Essential device files that represent your hardware components (like hard drives, keyboards, and USB ports) as files.
+
+/var: Variable files whose contents change dynamically while the system runs, such as system logs, databases, and temporary email spools.

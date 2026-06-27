@@ -1,0 +1,16 @@
+pwd
+Whenever you feel lost in the filesystem, call the pwd command to know where you are:
+
+Bash
+pwd
+It will print the current folder path.
+
+Key Concepts to Know About pwd
+What it stands for: Print Working Directory.
+
+Absolute Path: It always outputs the full path starting straight from the root directory (/), showing you exactly where you sit in the system hierarchy (e.g., /home/username/projects).
+
+Useful Flag (-P): If you are inside a directory that is actually a symbolic link (a shortcut), running pwd normally shows the shortcut path. If you want to see the physical, actual directory path underneath it, use:
+
+Bash
+pwd -P

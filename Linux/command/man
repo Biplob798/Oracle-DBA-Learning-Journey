@@ -1,0 +1,43 @@
+-- man
+The first command I want to introduce is a command that will help you understand all the other commands.
+
+Every time I don't know how to use a command, I type man <command> to get the manual:
+
+Terminal Text (man ls)
+Plaintext
+LS(1)                     BSD General Commands Manual                    LS(1)
+
+NAME
+     ls -- list directory contents
+
+SYNOPSIS
+     ls [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1%] [file ...]
+
+DESCRIPTION
+     For each operand that names a file of a type other than directory,
+     ls displays its name as well as any requested, associated informa-
+     tion.  For each operand that names a file of type directory, ls dis-
+     plays the names of files contained within that directory, as well as
+     any requested, associated information.
+
+     If no operands are given, the contents of the current directory are
+     displayed.  If more than one operand is given, non-directory oper-
+     ands are displayed first; directory and non-directory operands are
+     sorted separately and in lexicographical order.
+
+     The following options are available:
+
+     -@      Display extended attribute keys and sizes in long (-l) out-
+             put.
+
+     -1      (The numeric digit ``one''.) Force output to be one entry
+Pro-Tip for Navigating man Pages
+When you run a man command in Linux or macOS, it usually opens using a pager program like less. Here are the essential keys to control it:
+
+Spacebar / Page Down: Scroll down by a full screen.
+
+Arrow Keys: Scroll line by line.
+
+/pattern: Search for a specific word or flag (e.g., typing /-l will find where the -l flag is defined).
+
+q: Quit the manual and return to your regular terminal prompt.

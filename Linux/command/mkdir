@@ -1,0 +1,13 @@
+mkdir
+You create folders using the mkdir command:
+
+Bash
+mkdir fruits
+You can create multiple folders with one command:
+
+Bash
+mkdir dogs cars
+You can also create multiple nested folders by adding the -p option:
+
+Bash
+mkdir -p fruits/apples

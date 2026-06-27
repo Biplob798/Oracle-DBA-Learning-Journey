@@ -1,0 +1,19 @@
+ls
+Inside a folder you can list all the files that the folder contains using the ls command:
+
+Bash
+ls
+If you add a folder name or path, it will print that folder contents:
+
+Bash
+ls /bin
+Highly Useful ls Flags for Everyday Use
+When navigating directories, the plain ls command can be a bit minimal. Adding these flags will significantly improve your terminal visibility:
+
+ls -l (Long Listing): Displays detailed information about files, including file permissions, number of links, owner, group, file size, and the last modified date/time.
+
+ls -a (All Files): Reveals hidden files. In Unix-like systems, any file or folder starting with a dot (., such as .bashrc or .git) is hidden by default.
+
+ls -lh (Human-Readable Sizes): When combined with -l, this formats file sizes into an easily readable format (e.g., 4K, 25M, 2G) instead of raw bytes.
+
+ls -t (Sort by Time): Sorts the listed files and folders by their last modified time, putting the newest items at the top.

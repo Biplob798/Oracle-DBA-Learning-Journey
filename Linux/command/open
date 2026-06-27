@@ -1,0 +1,24 @@
+open
+The open command lets you open a file using this syntax:
+
+Bash
+open <filename>
+You can also open a directory, which on macOS opens the Finder app with the current directory open:
+
+Bash
+open <directory name>
+I use it all the time to open the current directory:
+
+(Note: The rest of the command string at the very bottom is cut off, but the standard way to do this is open .)
+
+💡 Cross-Platform Alternatives for open
+The open command shown here is highly specific to macOS for launching applications or opening Finder windows. If you switch environments, the exact equivalent changes:
+
+Linux (Ubuntu/Debian, etc.): Use xdg-open instead of open. For example, opening the current folder in your graphical file manager would be:
+
+Bash
+xdg-open .
+Windows (PowerShell/CMD): Use the start command. For example, opening the current folder in File Explorer would be:
+
+Bash
+start .

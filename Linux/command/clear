@@ -1,0 +1,11 @@
+clear
+Type clear to clear all the previous commands that were ran in the current terminal.
+
+The screen will clear and you will just see the prompt at the top:
+
+Shortcuts for Clearing the Screen
+Instead of typing out clear every time, you can also use these quick keyboard shortcuts depending on your environment:
+
+Ctrl + L: This works in almost all Linux/Unix shells (like Bash, Zsh, and Fish) and even in PowerShell or macOS Terminal. It has the exact same effect as running the clear command.
+
+Cmd + K (macOS): If you are on a Mac using the native Terminal app or iTerm2, this completely wipes the terminal's scrollback buffer, giving you a completely fresh screen slate.
