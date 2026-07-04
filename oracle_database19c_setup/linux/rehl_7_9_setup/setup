@@ -1,0 +1,18 @@
+--root user
+
+
+ifconfig
+
+--virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        --inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+
+
+192.168.122.1 
+
+vi /etc/hosts
+i
+ 
+192.168.122.1 localhos.localdomain 
+
+esc
+:wq!

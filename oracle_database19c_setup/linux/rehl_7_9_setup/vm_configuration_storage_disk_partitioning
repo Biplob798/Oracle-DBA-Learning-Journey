@@ -1,0 +1,4 @@
+/boot =  1G
+swap =  16G
+/tmp = 10G
+/    =  (khali)  => (ext4)J
