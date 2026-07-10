@@ -1,0 +1,65 @@
+192.168.0.105
+192.168.0.111 
+
+
+vi /etc/sysctl.conf
+i
+
+fs.file-max = 6815744
+kernel.sem = 250 32000 100 128
+kernel.shmmni = 4096
+kernel.shmall = 1073741824
+kernel.shmmax = 4398046511104
+kernel.panic_on_oops = 1
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+fs.aio-max-nr = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+
+Esc button
+
+:wq!
+
+-- now for check--
+/sbin/sysctl -p
+
+cat /etc/sysctl.conf
+
+
+vi /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+
+oracle   soft   nofile    1024
+oracle   hard   nofile    65536
+oracle   soft   nproc    16384
+oracle   hard   nproc    16384
+oracle   soft   stack    10240
+oracle   hard   stack    32768
+oracle   hard   memlock    134217728
+oracle   soft   memlock    134217728
+
+
+cat /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+--now create a folder and monut thats--
+mkdir /localdvd
+--akhon ay folder ay rehl ar iso file rakbo then we mount this folder--
+ vi /etc/yum.repos.d/local.repo
+[local]
+name=LocalRepository
+baseurl=file:///localdvd
+enabled=1
+gpgcheck=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+--now move rehl.iso file thats (localdvd folder)
+--after thats now monut--
+# 1. Create the system folder at the root level
+mkdir -p /localdvd
+
+# 2. Run your mount command again
+mount -o loop /root/localdvd/rhel-server-7.9-x86_64-dvd.iso /localdvd

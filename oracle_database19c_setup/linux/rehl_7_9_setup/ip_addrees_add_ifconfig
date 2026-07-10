@@ -1,0 +1,9 @@
+ifconfig
+vi /etc/hosts
+i
+ip+host   = 192.168.0.111 localhost.localdomain
+esc
+:wq!
+
+--to see for what i save--
+cat /etc/hosts
