@@ -1,0 +1,61 @@
+Step 1: Remove the database properly using DBCA
+-----------------
+su - oracle
+
+dbca -silent -deleteDatabase -sourceDB dblcluster
+
+
+Step 2: Stop the listener
+
+lsnrctl stop
+
+Step 3: Deinstall the Oracle software (not just the database)
+
+cd $ORACLE_HOME/deinstall
+./deinstall
+
+--or
+
+cd /u01/app/oracle/product/19.0.0/dbhome_1/deinstall
+./deinstall
+
+
+
+Step 4: Clean up remaining directories (as root)
+
+
+su - root
+
+# Remove Oracle base and inventory
+rm -rf /u01/app/oracle
+rm -rf /u01/app/oraInventory
+
+# Remove config pointer files
+rm -f /etc/oraInst.loc
+rm -f /etc/oratab
+
+# If /u01/app itself is now empty and was created only for Oracle:
+ls -la /u01/app
+# if empty, optionally: rmdir /u01/app
+
+
+Step 5: Clean environment settings
+
+cat /home/oracle/.bash_profile
+
+
+Step 6 (optional): Remove the oracle OS user entirely
+
+
+su - root
+
+ps -ef | grep oracle
+pkill -9 -u oracle
+
+userdel -r oracle
+groupdel oinstall
+groupdel dba
+
+Step 7: Reboot
+
+reboot

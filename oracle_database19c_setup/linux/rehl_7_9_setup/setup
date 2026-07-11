@@ -1,18 +1,386 @@
---root user
 
+PHASE 1 — Network Configuration (as root)
 
 ifconfig
 
---virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
-        --inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+
+--inet 192.168.0.105  netmask 255.255.255.0  broadcast    192.168.0.255 --
 
 
-192.168.122.1 
+
+192.168.0.105 
 
 vi /etc/hosts
 i
  
-192.168.122.1 localhos.localdomain 
+192.168.0.105  localhos.localdomain 
 
 esc
 :wq!
+
+cat /etc/hosts
+
+
+##PHASE 2 — Mount Installation Media & Configure Local Repo (as root)
+
+  mkdir -p /localdvd
+  --now move iso file this location by winScn
+
+  vi /etc/yum.repos.d/local.repo
+[local]
+name=LocalRepository
+baseurl=file:///localdvd
+enabled=1
+gpgcheck=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+ cat /etc/yum.repos.d/local.repo
+
+
+ --now go this directory and past this
+
+ cd /localdvd
+ mount -o loop /localdvd/rhel-server-7.9-x86_64-dvd.iso /localdvd
+
+
+--Test the repo:
+
+yum clean all
+yum repolist
+
+
+
+## PHASE 3 — Install Required OS Packages (as root)
+
+yum install -y bc binutils elfutils-libelf fontconfig glibc glibc-devel glibc-headers ksh libaio libX11 libXau libXi libXrender libXtst libgcc libibverbs librdmacm libstdc++ libxcb libvirt-libs make policycoreutils policycoreutils-python smartmontools sysstat net-tools nfs-utils xorg-x11-xauth
+
+
+
+
+## PHASE 4 — Kernel Parameters (as root)
+
+vi /etc/sysctl.d/98-oracle.conf
+Press i, then paste
+
+fs.file-max = 6815744
+kernel.sem = 250 32000 100 128
+kernel.shmmni = 4096
+kernel.shmall = 1073741824
+kernel.shmmax = 4398046511104
+kernel.panic_on_oops = 1
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+fs.aio-max-nr = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+
+Press Esc, then type
+
+:wq!
+
+and press Enter
+
+--Verify the file saved correctly
+
+cat /etc/sysctl.d/98-oracle.conf
+
+--or
+
+cat >> /etc/sysctl.conf << 'EOF'
+fs.file-max = 6815744
+kernel.sem = 250 32000 100 128
+kernel.shmmni = 4096
+kernel.shmall = 1073741824
+kernel.shmmax = 4398046511104
+kernel.panic_on_oops = 1
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+fs.aio-max-nr = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+EOF
+
+
+/sbin/sysctl -p
+
+```
+
+Verify values applied:
+```bash
+sysctl -a | grep -E 'shmmax|shmall|file-max|aio-max-nr'
+
+```
+
+##PHASE  5 — Apply the settings to the running kernel
+
+  /sbin/sysctl -p /etc/sysctl.d/98-oracle.conf
+
+
+
+## PHASE 6 — Resource Limits for Oracle User (as root)
+
+vi /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+Press i, then paste
+
+oracle   soft   nofile    1024
+oracle   hard   nofile    65536
+oracle   soft   nproc    16384
+oracle   hard   nproc    16384
+oracle   soft   stack    10240
+oracle   hard   stack    32768
+oracle   hard   memlock    134217728
+oracle   soft   memlock    134217728
+
+
+Press Esc, then type
+
+:wq!
+
+and press Enter
+--Verify
+cat /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+
+
+## PHASE 7 — Create Groups, User, and Directories (as root)
+
+
+groupadd -g 54321 oinstall
+groupadd -g 54322 dba
+groupadd -g 54323 oper
+useradd -u 54321 -g oinstall -G dba,oper oracle
+passwd oracle
+
+
+--Verify
+id oracle
+
+
+
+mkdir -p /u01/app/oracle/product/19.0.0/dbhome_1
+mkdir -p /u01/app/oracle/oradata
+mkdir -p /home/oracle/scripts
+
+chown -R oracle:oinstall /u01
+chmod -R 775 /u01
+ 
+chown -R oracle:oinstall /u01/app/oracle/oradata
+chmod -R 775 /u01/app/oracle/oradata
+
+
+
+## PHASE 7 — Disable SELinux & Firewall (as root, optional but recommended for smooth install)
+
+
+systemctl stop firewalld
+systemctl disable firewalld
+
+setenforce 0
+
+vi /etc/selinux/config
+
+--Press i to enter insert mode
+
+SELINUX=permissive
+
+--Press Esc, then type :wq! and press Enter to save.
+
+getenforce
+cat /etc/selinux/config | grep ^SELINUX=
+
+--or
+
+sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+
+
+## PHASE 8 — Stage the Oracle Zip File for the Oracle User (as root)
+
+--Copy the Oracle database zip file to the (/u01/app/oracle/product/19.0.0/dbhome_1) by WinScn and hand ownership to oracle immediately:
+
+chown oracle:oinstall /u01/app/oracle/product/19.0.0/dbhome_1/LINUX.X64_193000_db_home.zip
+
+## PHASE 9 — Connect as `oracle` Directly via SSH (Critical for Display to Work)
+
+Instead, open a **brand-new SSH session logging in as `oracle` directly**:
+
+1. In MobaXterm: **Sessions → New session → SSH**
+2. Remote host: your server's IP address
+3. Check "Specify username" → enter `oracle`
+4. Click the **"Advanced SSH settings"** tab
+5. Check ✅ **"X11-Forwarding"**
+6. Click **OK** and log in with the oracle password 
+
+
+export CV_ASSUME_DISTID=OEL7.6
+echo $DISPLAY
+xdpyinfo
+
+echo $DISPLAY
+
+
+## PHASE 10 — Set Environment Variables Permanently (as oracle) 
+--all do in (ROOT User)
+
+cat > /home/oracle/scripts/setEnv.sh <<EOF
+export TMP=/tmp
+export TMPDIR=\$TMP
+
+export ORACLE_HOSTNAME=localhost.localdomain
+export ORACLE_UNQNAME=dblcluster
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=\$ORACLE_BASE/product/19.0.0/dbhome_1
+export ORA_INVENTORY=/u01/app/oraInventory
+export ORACLE_SID=dblclustersid
+export DATA_DIR=/u01/app/oracle/oradata
+
+export PATH=/usr/sbin:/usr/local/bin:\$PATH
+export PATH=\$ORACLE_HOME/bin:\$PATH
+
+export LD_LIBRARY_PATH=\$ORACLE_HOME/lib:/lib:/usr/lib
+export CLASSPATH=\$ORACLE_HOME/jlib:\$ORACLE_HOME/rdbms/jlib
+EOF
+
+
+cat > /home/oracle/scripts/start_all.sh <<EOF
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbstart \$ORACLE_HOME
+EOF
+
+
+cat > /home/oracle/scripts/stop_all.sh <<EOF
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbshut \$ORACLE_HOME
+EOF
+
+
+chown -R oracle:oinstall /home/oracle/scripts
+chmod u+x /home/oracle/scripts/*.sh
+
+echo ". /home/oracle/scripts/setEnv.sh" >> /home/oracle/.bash_profile
+
+PHASE 11 — Verify Environment (as oracle)
+
+echo $ORACLE_HOME
+echo $ORACLE_SID
+echo $ORACLE_HOSTNAME
+echo $DATA_DIR
+
+PHASE 12 — Unzip the Oracle Software (as oracle)
+
+cd $ORACLE_HOME
+pwd
+
+unzip -q LINUX.X64_193000_db_home.zip
+
+
+--Once it finishes (prompt returns to [oracle@localhost dbhome_1]$), run:
+
+ls $ORACLE_HOME
+
+df -h /u01
+
+
+./runInstaller
+
+--Run this on( ROOT user)
+
+/u01/app/oraInventory/orainstRoot.sh
+/u01/app/oracle/product/19.0.0/dbhome_1/root.sh
+
+
+## PHASE 13 — Create a Database with DBCA
+
+
+export CV_ASSUME_DISTID=OEL7.6
+cd $ORACLE_HOME/bin
+./dbca
+
+
+## PHASE 14 — Connect to the Database
+
+
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+
+ALTER USER HR IDENTIFIED BY hr ACCOUNT UNLOCK;
+
+sqlplus HR/hr@dblcluster
+
+
+Step 1 — Check if you actually have a CDB/PDB setup
+
+sqlplus / as sysdba
+
+SELECT name, cdb FROM v$database;
+
+
+Step 2 — List the pluggable databases
+
+SHOW PDBS;
+
+
+Step 3 — Switch your session into that PDB
+
+ALTER SESSION SET CONTAINER = ORCLPDB;
+
+Step 4 — Now unlock/set up HR inside the PDB
+
+SELECT username, account_status FROM dba_users WHERE username='HR';
+
+ALTER USER HR IDENTIFIED BY hr ACCOUNT UNLOCK;
+
+Step 5 — Exit and connect directly to the PDB as HR
+
+SHOW CON_NAME;
+
+sqlplus HR/hr@localhost:1521/ORCLPDB
+
+
+--for if hr schema not exit---
+
+Step 1: Allow local users in the CDB Root
+SQL
+-- Reconnect as SYS if you aren't already
+conn / as sysdba
+
+-- Enable traditional user creation in a CDB
+ALTER SESSION SET "_oracle_script"=true;
+Step 2: Run the Official HR Installation Script
+Now, run the built-in script. The ? symbol is a shortcut that points straight to your Oracle Home path:
+
+SQL
+@?/demo/schema/human_resources/hr_main.sql
+⌨️ What to Type When the Script Prompts You:
+The script will stop and ask you for 4 specific parameters. Type them out and hit Enter for each one:
+
+specify password for HR as parameter 1: Type hr
+
+specify default tablespace for HR as parameter 2: Type users
+
+specify temporary tablespace for HR as parameter 3: Type temp
+
+specify log path as parameter 4: Type /tmp/
+
+🧪 Test Your New HR Connection
+Once the script finishes running and creating all the tables, test your connection way:
+
+SQL
+conn hr/hr
+It will now cleanly report Connected. and you can run select * from tab; to see your new sample tables! Let me know if the @? script execution starts up smoothly on your screen.
