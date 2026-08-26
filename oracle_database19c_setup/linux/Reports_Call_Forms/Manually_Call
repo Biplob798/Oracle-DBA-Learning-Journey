@@ -1,0 +1,94 @@
+DECLARE
+
+    v_repid       REPORT_OBJECT;
+    v_rep         VARCHAR2(200);
+    v_rep_status  VARCHAR2(200);
+    v_url         VARCHAR2(2000);
+    v_repserver   VARCHAR2(500) := 'zenithrepserver1'; ---------------
+
+    v_report      VARCHAR2(100) := '/u02/AllReports/CASH_BOOK_RPT.rdf';---------------------
+
+BEGIN
+
+    -- Reports WebLogic URL
+    v_url := 'http://192.168.3.70:9002';-----------------------
+
+    -- Find report object
+    v_repid := FIND_REPORT_OBJECT('CASH_BOOK_RPT');
+
+    -- Report configuration
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_FILENAME,
+        v_report
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_EXECUTION_MODE,
+        BATCH
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_COMM_MODE,
+        SYNCHRONOUS
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_DESTYPE,
+        CACHE
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_DESFORMAT,
+        'PDF'
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_SERVER,
+        v_repserver
+    );
+
+    SET_REPORT_OBJECT_PROPERTY(
+        v_repid,
+        REPORT_OTHER,
+        'p-1=' || :BLOCK3.POST_LEDGER_NO ||
+        'P_2=' || TO_CHAR(:START_DATE,'DD-MM-RRRR') ||
+        ' P_3=' || TO_CHAR(:END_DATE,'DD-MM-RRRR') ||
+        ' PARAMFORM=NO'
+    );
+
+    -- Run report
+    v_rep := RUN_REPORT_OBJECT(v_repid);
+
+    v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+
+    WHILE v_rep_status IN
+        ('RUNNING','OPENING_REPORT','ENQUEUED')
+    LOOP
+        v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+    END LOOP;
+
+    -- Display report
+    IF v_rep_status = 'FINISHED' THEN
+
+        WEB.SHOW_DOCUMENT(
+            v_url ||
+            '/reports/rwservlet/getjobid' ||
+            SUBSTR(v_rep, INSTR(v_rep,'_',-1)+1) ||
+            '?server=' || v_repserver,
+            '_blank'
+        );
+
+    ELSE
+
+        MESSAGE('Report Failure: ' || v_rep_status);
+        MESSAGE('Report Failure: ' || v_rep_status);
+
+    END IF;
+
+END;
