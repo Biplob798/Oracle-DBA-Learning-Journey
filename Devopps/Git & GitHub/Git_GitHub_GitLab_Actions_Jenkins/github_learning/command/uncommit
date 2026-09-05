@@ -1,0 +1,8 @@
+Undo commit, keep staged changes:
+git reset --soft HEAD^
+
+Undo commit, unstage changes (keep local edits):
+git reset HEAD^
+
+Undo commit, discard all local changes entirely:
+git reset --hard HEAD^
