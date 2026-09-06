@@ -1,0 +1,63 @@
+DECLARE
+ 
+v_repid 			REPORT_OBJECT;
+v_rep 				VARCHAR2(200);
+v_rep_status  VARCHAR2(200);
+v_param 			VARCHAR2(200) 	:= NULL;
+v_valor 			VARCHAR2(200);
+v_url 				VARCHAR2(2000);
+v_repserver 	VARCHAR2(500) 	:='rep_wls_reports_www-zenith_asinst_1';
+V_REPORT_FILE_PATH varchar2(100) 		:= '';
+V_REPORT_FILE_NAME varchar2(100) 		:= '';
+v_report varchar2(100) 				:= 'D:/ACCOUNTS_MANAGEMENT/REPORTS/CASH_BOOK_RPT.rdf';
+v_PARAMETRO varchar2(100) 		:= '';
+ 
+BEGIN
+	
+v_url := 'http://192.168.3.70:9002';
+
+--come from table HRD.REPORT_STANDARD
+SELECT RPT_SERVER,RPT_URL,RPT_PATH
+INTO v_repserver,v_url,V_REPORT_FILE_PATH
+FROM HRD.REPORT_STANDARD
+WHERE MODULE='ACCOUNTS';
+
+--come from table HRD.GN_ERP_REPORT
+
+SELECT REPORT_FILE_NAME
+INTO V_REPORT_FILE_NAME
+FROM HRD.GN_ERP_REPORT
+WHERE MODULE_ID='ACC' AND REPORT_ID=1;
+
+v_report:=V_REPORT_FILE_PATH||V_REPORT_FILE_NAME;
+ 
+v_repid := FIND_REPORT_OBJECT('CASH_BOOK_RPT'); 
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_FILENAME, v_report);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_EXECUTION_MODE, BATCH);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_COMM_MODE, SYNCHRONOUS);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESTYPE, cache);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESFORMAT, 'PDF' );
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESNAME, v_report);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_SERVER, v_repserver);
+SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_OTHER, 'paramform=yes '||v_PARAMETRO);
+
+
+SET_REPORT_OBJECT_PROPERTY(v_repid,REPORT_OTHER,'P_1='||:POST_LEDGER_NO||' P_2='||to_char(:START_DATE,'dd-mm-rrrr')||' P_3='||to_char(:BLOCK3.END_DATE,'dd-mm-rrrr')||' paramform=no');
+
+
+v_rep := RUN_REPORT_OBJECT(v_repid);
+v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+
+WHILE v_rep_status IN ('RUNNING','OPENING_REPORT','ENQUEUED') LOOP
+v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+END LOOP;
+IF v_rep_status = 'FINISHED' THEN
+--message(v_rep);
+--message(v_rep);
+WEB.SHOW_DOCUMENT(v_url||'/reports/rwservlet/getjobid'||
+SUBSTR(v_rep, INSTR(v_rep,'_', -1)+1)||'?'||'server='||v_repserver, '_blank');
+ELSE
+message('Report Failure'||v_rep_status);
+END IF;
+
+END;

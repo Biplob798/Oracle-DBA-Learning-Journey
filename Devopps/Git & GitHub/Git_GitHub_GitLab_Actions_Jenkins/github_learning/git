@@ -1,0 +1,13 @@
+git is a Version control system
+like this others(GitLab,beanstalk,perforce,bitbucket)
+
+GitHub is a hold reposotory by online.
+
+
+git >code>push>github>clone>work>push
+
+GitHub	                                    Git
+Service	                                    Tool / software
+Host git repository/folder/source code	    Change control, version control
+Provides GUI Interface	                    Provides CLI (Command Line Interface Tool)
+Maintained on cloud/web	                    Installed and maintained locally

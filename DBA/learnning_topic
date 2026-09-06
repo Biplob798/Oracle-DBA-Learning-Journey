@@ -1,0 +1,66 @@
+Topic-1: Architecture & Memory Management
+
+Database Instance vs. Database Structure
+
+SGA Components: Shared Pool, Buffer Cache, Redo Log Buffer, Large Pool, Java Pool
+
+PGA Architecture: Private SQL Area, SQL Work Areas
+
+Physical File Management: Datafiles, Control Files, Redo Log Files, Parameter Files (spfile / pfile)
+
+Background Processes: DBWn, LGWR, CKPT, SMON, PMON, ARCn
+
+Topic-2: Storage, Schema & Security
+Storage Structure: Tablespaces, Segments, Extents, Data Blocks
+
+ASM (Automatic Storage Management): Disk Groups, Redundancy, Striping
+
+User Management: Roles, Privileges (System vs. Object), Profiles, Quotas
+
+Database Security: Auditing, Data Redaction, TDE (Transparent Data Encryption)
+
+Topic-3: Backup, Recovery & Data Transport
+RMAN (Recovery Manager):
+
+Full, Incremental (Level 0, Level 1), Cumulative Backups
+
+Crosscheck, Delete Obsolete, Report/List Commands
+
+Point-in-Time Recovery (PITR) & Disaster Recovery Scenarios
+
+Data Transport Utilities:
+
+Data Pump (expdp / impdp): Full, Schema, Table, Filter export/import
+
+SQL*Loader & External Tables
+
+Topic-4: High Availability & Scalability
+Oracle Data Guard:
+
+Physical vs. Logical Standby
+
+Data Protection Modes (Maximum Performance, Availability, Protection)
+
+Switchover vs. Failover Procedures, Active Data Guard
+
+Oracle RAC (Real Application Clusters):
+
+Multi-Node Cluster Architecture & Interconnect
+
+Clusterware Services, OCR (Oracle Cluster Registry) & Voting Disk
+
+Topic-5: Performance Tuning & Diagnostic
+Performance Analysis Tools: AWR (Automatic Workload Repository), ADDM, ASH Reports
+
+SQL Tuning: Execution Plans, Explain Plan, SQL Profiles, Indexing Strategies
+
+Memory & I/O Tuning: SGA/PGA Advisory, Heavy Query Optimization, Lock & Blocking Session resolution
+
+Topic-6: Maintenance, Patching & Infrastructure
+Database Upgrades: Major Version Upgrades (e.g., 19c to 23c), DBUA vs. Manual Upgrade
+
+Patch Management: OPatch utility, RU (Release Update) & RUR Application
+
+Middleware & Networking: Listener (listener.ora), TNS (tnsnames.ora), WebLogic Managed Servers (WLS_FORMS/WLS_REPORTS), ORDS Integration
+
+Automation: Linux Shell Scripting (Bash) for Cron Jobs, Health Checks, and Backup Automation

@@ -1,0 +1,21 @@
+
+--D:\Oracle\Middleware\Oracle_Home\user_projects\domains\base_domain\config\fmwconfig\servers\WLS_REPORTS\applications\reports_12.2.1\configuration\cgicmd.dat
+
+CHART_OF_ACC_RPT_ALL: report=D:\all_forms_reports\ACCOUNTS_MANAGEMENT\reports\CHART_OF_ACC_RPT_ALL.rdf userid=hr/hr@rcuwin desformat=pdf destype=cache paramform=no %*
+
+
+--programm unit procedure print_preview
+
+PROCEDURE print_preview
+IS
+   vc_url VARCHAR2(1000);
+BEGIN
+   vc_url := 'http://192.168.3.70:9002/reports/rwservlet?CHART_OF_ACC_RPT_ALL&zenithrepserver1';
+
+   WEB.SHOW_DOCUMENT (vc_url, '_blank');
+
+EXCEPTION
+   WHEN OTHERS THEN
+      Message('Error while generating report: ' || SQLERRM);
+      Message(' ');
+END;

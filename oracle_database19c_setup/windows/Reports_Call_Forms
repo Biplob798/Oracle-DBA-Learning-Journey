@@ -1,0 +1,34 @@
+http://localhost:9002/reports/rwservlet/getserverinfo
+
+
+DECLARE
+   v_report_id    REPORT_OBJECT;
+   v_report_server_job VARCHAR2(100);
+   v_rep_status   VARCHAR2(100);
+   v_url          VARCHAR2(500);
+BEGIN
+   -- Find report object defined in Forms Builder
+   v_report_id := FIND_REPORT_OBJECT('YOUR_REPORT_NAME');
+
+   -- Set runtime parameters
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_SERVER, 'rep_wls_reports_dinesh_pc');
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_EXECUTION_MODE, BATCH);
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_COMM_MODE, SYNCHRONOUS);
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_DESTYPE, CACHE);
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_DESFORMAT, 'PDF');
+
+   -- Pass custom report parameters if needed
+   SET_REPORT_OBJECT_PROPERTY(v_report_id, REPORT_OTHER, 'p_dept_id=10 authid=GUEST');
+
+   -- Execute report
+   v_report_server_job := RUN_REPORT_OBJECT(v_report_id);
+
+   -- Get job status or build output URL
+   v_rep_status := REPORT_OBJECT_STATUS(v_report_server_job);
+   IF v_rep_status = 'FINISHED' THEN
+      v_url := '/reports/rwservlet/getjobid' || 
+               SUBSTR(v_report_server_job, INSTR(v_report_server_job, '_', -1) + 1) || 
+               '?server=rep_wls_reports_dinesh_pc';
+      WEB.SHOW_DOCUMENT(v_url, '_blank');
+   END IF;
+END;
