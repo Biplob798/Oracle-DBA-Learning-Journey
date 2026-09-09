@@ -1,0 +1,68 @@
+     DECLARE
+ 
+			v_repid 			REPORT_OBJECT;
+			v_rep 				VARCHAR2(200);
+			v_rep_status  VARCHAR2(200);
+			v_param 			VARCHAR2(200) 	:= NULL;
+			v_valor 			VARCHAR2(200);
+			v_url 				VARCHAR2(2000):= 'http://192.168.3.70:9002/reports/rwservlet';--change here just
+			v_repserver 	VARCHAR2(500) 	:='zenithrepserver1'; --change here just
+			v_report varchar2(100) 				:= '/u02/AllReports/LEAVE_STATEMENT.rdf';--change here just
+			v_PARAMETRO varchar2(100) 		:= '';
+			
+			A VARCHAR2(20);
+			 
+			BEGIN
+				
+				v_repid := FIND_REPORT_OBJECT('LEAVE_STATEMENT'); 
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_FILENAME, v_report);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_EXECUTION_MODE, BATCH);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_COMM_MODE, SYNCHRONOUS);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESTYPE, cache);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESFORMAT, 'PDF' );
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESNAME, v_report);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_SERVER, v_repserver);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_OTHER, 'paramform=no '||v_PARAMETRO);
+				
+				
+				--SET_REPORT_OBJECT_PROPERTY(v_repid,REPORT_OTHER,'P_1=' || :BILL_MONTH || ' P_2=' || :BILL_YEAR ||' P_3=' || :BILL_NO || ' paramform=no');
+				
+				
+				v_rep := RUN_REPORT_OBJECT(v_repid);
+				v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+				
+				WHILE v_rep_status IN ('RUNNING','OPENING_REPORT','ENQUEUED') LOOP
+				v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+				END LOOP;
+				IF v_rep_status = 'FINISHED' THEN
+					--message(v_rep);
+					--message(v_rep);
+					WEB.SHOW_DOCUMENT(v_url||'/getjobid'||
+					SUBSTR(v_rep, INSTR(v_rep,'_', -1)+1)||'?'||'server='||v_repserver, '_blank');
+					
+					--vc_url:='/reports/rwservlet?USERID=ACCOUNTS_MANAGEMENT/01730052777@SYSTEM&server=rep_wls_reports_www-zenith_asinst_1&report=D:/ACCOUNTS_MANAGEMENT/reports/DAILY_V_REPORT.rep&desformat=pdf' || '&destype=cache&P_1=' || :V_NO_PARAM || '&paramform=no';
+					--WEB.SHOW_DOCUMENT(vc_url,'_blank')
+				
+				ELSE
+					message('Report Failure'||v_rep_status);
+				END IF;			
+			
+			 
+			END;
+-------------------------------------------------------------------------------------------------
+ELSE
+		MESSAGE('Unauthorized Access!!!');
+ 		MESSAGE('Unauthorized Access!!!');
+		RAISE FORM_TRIGGER_FAILURE;	
+END IF;
+
+STANDARD.COMMIT;
+CLEAR_FORM(NO_VALIDATE);
+
+
+    :EMPCODE:=:GLOBAL.VEMPCODE;
+    :EMPNAME:=:GLOBAL.VNAME;
+    :EMPDEPARTMENT:=:GLOBAL.VDEPARTMENT;
+    :DEPTNAME:=:GLOBAL.VDEPTNAME;
+ 
+PRINT_INFO;

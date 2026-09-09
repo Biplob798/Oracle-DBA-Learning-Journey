@@ -1,0 +1,71 @@
+PROCEDURE GENERATE_REPORT(P_PARA IN ParamList,P_REP IN VARCHAR2) IS
+	repid REPORT_OBJECT;
+	v_rep VARCHAR2(100);
+	rep_status varchar2(20);
+	vjob_id  VARCHAR2(100) :='';
+--	v_rep_server	varchar2(1000) := 'rptsvr_oplwls-node1_frinst_1';
+	v_rep_server	varchar2(1000) := '';
+	
+	v_url	varchar2(1000) := '';
+	pl_id ParamList; 
+	pl_name VARCHAR2(10) := 'RP';
+	v_REPORT_DESNAME	varchar2(2000) := '';
+	v_RepLoc        varchar2(4000):= '';
+	v_HostComandP varchar2(4000):= '';
+v_url_path	varchar2(2000) := '';		
+		
+			
+BEGIN
+	pl_id := Get_Parameter_List(pl_name); 
+	IF Id_Null(pl_id) THEN 
+		null;
+	ELSE
+		destroy_Parameter_List(pl_name);
+	END IF;
+	
+																																
+  	HRD.Dpr_Run_Report_jobid('HRD',v_rep_server,v_RepLoc,v_url_path);
+  
+--	insert into test_rep (para,rep) values(P_PARA,P_REP);commit;
+
+/*	pl_id := Create_Parameter_List(pl_name);
+	Add_Parameter(pl_id,'P_PATIENT_REG_NO',TEXT_PARAMETER,:PATIENT_REG_NO);
+	Add_Parameter(pl_id,'P_ADMISSION_NO',TEXT_PARAMETER,:ADMISSION_NO);
+	Add_Parameter(pl_id,'P_VOUCHER_ID',TEXT_PARAMETER,:VOUCHER_ID);
+	Add_Parameter(pl_id,'P_BR_CODE',TEXT_PARAMETER,:GLOBAL.BR_CODE);
+	Add_Parameter(pl_id,'P_LOC_ID',TEXT_PARAMETER,:GLOBAL.LOC_ID);*/
+	pl_id := P_PARA;
+	repid := find_report_object('RPT_PREVIEW');
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_FILENAME,v_RepLoc||P_REP);
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_EXECUTION_MODE, BATCH);
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_COMM_MODE, SYNCHRONOUS);
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_SERVER, v_rep_server);
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_DESTYPE, cache);
+	SET_REPORT_OBJECT_PROPERTY(repid, REPORT_DESFORMAT, 'PDF');
+	
+	v_rep := RUN_REPORT_OBJECT(repid,pl_id);
+	rep_status := REPORT_OBJECT_STATUS(v_rep);
+	
+	vjob_id := substr(v_rep, 6, length(v_rep));
+	vjob_id := substr(v_rep,instr(v_rep,'_',-1)+1);
+	
+	if rep_status = 'FINISHED' then
+		message('Report Completed: '||get_report_object_property(repid, REPORT_FILENAME), no_acknowledge);
+		v_REPORT_DESNAME := vjob_id||'.pdf';
+--		copy_report_object_output(v_rep, v_ASLoc||v_REPORT_DESNAME);
+		
+	
+														 
+	--	if :SYSTEM.TRIGGER_ITEM = 'BTN_BLK.BTN_SAVE' then 
+	WEB.SHOW_DOCUMENT(v_url_path||'/getjobid'||ltrim(vjob_id,'_')||'?server='||v_rep_server,'_blank');--change here just
+	--		message('vjob_id '||vjob_id, no_acknowledge);
+	--	message('xxx');
+	--	message('xxx');
+	--	end if;		
+	else
+		message('Error when running report.'||get_report_object_property(repid, REPORT_FILENAME), no_acknowledge);
+	end if;
+EXCEPTION
+	WHEN OTHERS THEN
+		MESSAGE('Error '||get_report_object_property(repid, REPORT_FILENAME)||error_text,no_acknowledge);
+END;
