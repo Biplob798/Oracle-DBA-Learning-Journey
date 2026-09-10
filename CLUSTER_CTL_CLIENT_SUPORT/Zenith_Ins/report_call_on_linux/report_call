@@ -1,0 +1,164 @@
+PROCEDURE REPORT_PROCESS IS
+
+
+	pl_id ParamList;
+  reportname  varchar2(200);	
+  
+	
+	v_repid 			REPORT_OBJECT;
+	v_rep 				VARCHAR2(200);
+	v_rep_status  VARCHAR2(200);
+	v_param 			VARCHAR2(200) 	:= NULL;
+	v_valor 			VARCHAR2(200);
+	v_url 				VARCHAR2(2000):='http://192.168.3.70:9002/reports/rwservlet';
+	v_repserver 	VARCHAR2(500) 	:='zenithrepserver1';
+	v_report varchar2(200);
+	v_PARAMETRO varchar2(100) 		:= '';
+
+
+BEGIN
+  	pl_id := Get_Parameter_List('tmpdata'); 
+
+     	IF NOT Id_Null(pl_id) THEN  
+     	  	Destroy_Parameter_List( pl_id ); 
+     	END IF; 
+       	
+		pl_id := Create_Parameter_List('tmpdata'); 
+
+   	reportname:='PR_STATUS_BENEFI';
+
+
+	IF NOT Id_Null(pl_id) THEN
+ 			Add_Parameter(pl_id, 'PARAMFORM', TEXT_PARAMETER, 'NO');
+      --Add_Parameter(pl_id, 'DATE_FROM', TEXT_PARAMETER, :DATA_BLK.DATE_FROM);
+      Add_Parameter(pl_id, 'DATE_TO', TEXT_PARAMETER, :DATA_BLK.DATE_TO);
+      Add_Parameter(pl_id, 'status', TEXT_PARAMETER, :DATA_BLK.STATUS);
+ 	
+	  	v_report:='/u02/AllReports/'||reportname||'.rdf';
+	         	
+	  	v_repid := FIND_REPORT_OBJECT(reportname); 
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_FILENAME, v_report);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_EXECUTION_MODE, BATCH);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_COMM_MODE, SYNCHRONOUS);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESTYPE, cache);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESFORMAT, 'PDF' );
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESNAME, v_report);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_SERVER, v_repserver);
+		SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_OTHER, 'paramform=no '||v_PARAMETRO);
+		
+		
+		SET_REPORT_OBJECT_PROPERTY(v_repid,REPORT_OTHER,' paramform=no');
+		
+		
+		v_rep := RUN_REPORT_OBJECT(v_repid,pl_id);
+		v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+		
+		WHILE v_rep_status IN ('RUNNING','OPENING_REPORT','ENQUEUED') LOOP
+			v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+		END LOOP;
+
+		IF v_rep_status = 'FINISHED' THEN
+		
+			WEB.SHOW_DOCUMENT(v_url||'/getjobid'||
+			SUBSTR(v_rep, INSTR(v_rep,'_', -1)+1)||'?'||'server='||v_repserver, '_blank');		
+		
+		ELSE
+			message('Report Failure'||v_rep_status);
+		END IF;
+	    		
+   END IF;     		
+     		
+END;
+
+
+============================================================================
+
+
+
+DECLARE
+  v_lov BOOLEAN;
+  pl_id ParamList;
+  reportname  varchar2(200);	
+  VREPRINT_STATUS VARCHAR2(1);
+  VDCS_STATUS     VARCHAR2(1);
+  VUSER_ID        VARCHAR2(10);
+	VDCS_BATCHNO VARCHAR2(50);
+	
+	v_repid 			REPORT_OBJECT;
+	v_rep 				VARCHAR2(200);
+	v_rep_status  VARCHAR2(200);
+	v_param 			VARCHAR2(200) 	:= NULL;
+	v_valor 			VARCHAR2(200);
+	v_url 				VARCHAR2(2000) :='http://192.168.3.70:9002/reports/rwservlet';
+	v_repserver 	VARCHAR2(500) 	:='zenithrepserver1';
+	v_report varchar2(100) 	;--change here just
+	v_PARAMETRO varchar2(100) 		:= '';	
+
+BEGIN
+	
+IF :BILL_MONTH IS NULL THEN
+	message('Please Select a Bill Month...');
+	message('Please Select a Bill Month...');
+	return;
+END IF;	
+
+	pl_id := Get_Parameter_List('tmpdata'); 
+	
+	IF NOT Id_Null(pl_id) THEN  
+  	Destroy_Parameter_List( pl_id ); 
+	END IF; 
+	
+	pl_id := Create_Parameter_List('tmpdata'); 
+
+
+
+  REPORTNAME:='GROUP_PREMIUM_COLLECTION';
+ 
+		
+  IF NOT Id_Null(pl_id) THEN
+		 		Add_Parameter(pl_id, 'PARAMFORM', TEXT_PARAMETER, 'NO');
+		  	
+        Add_Parameter(pl_id, 'BILL_MONTH', TEXT_PARAMETER, :DATA_BLK.BILL_MONTH);
+        Add_Parameter(pl_id, 'PD', TEXT_PARAMETER, :DATA_BLK.PD);
+		 	  Add_Parameter(pl_id, 'DSGN', TEXT_PARAMETER, :DATA_BLK.DSGN);
+		 	  Add_Parameter(pl_id, 'CODE', TEXT_PARAMETER, :DATA_BLK.CODE);
+			  --v_report:='D:/GROUP_MANAGEMENT/reports/'||reportname||'.rdf';
+			  v_report:='/u02/AllReports/'||reportname||'.rdf';
+			  
+			 
+			         	
+			  v_repid := FIND_REPORT_OBJECT(reportname); 
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_FILENAME, v_report);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_EXECUTION_MODE, BATCH);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_COMM_MODE, SYNCHRONOUS);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESTYPE, cache);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESFORMAT, 'PDF' );
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_DESNAME, v_report);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_SERVER, v_repserver);
+				SET_REPORT_OBJECT_PROPERTY(v_repid, REPORT_OTHER, 'paramform=no '||v_PARAMETRO);
+				
+				
+				SET_REPORT_OBJECT_PROPERTY(v_repid,REPORT_OTHER,' paramform=no');
+				
+				
+				v_rep := RUN_REPORT_OBJECT(v_repid,pl_id);
+				v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+				
+				WHILE v_rep_status IN ('RUNNING','OPENING_REPORT','ENQUEUED') 
+				LOOP
+					v_rep_status := REPORT_OBJECT_STATUS(v_rep);
+				END LOOP;
+				
+				IF v_rep_status = 'FINISHED' THEN
+				
+					WEB.SHOW_DOCUMENT(v_url||'/getjobid'||
+					SUBSTR(v_rep, INSTR(v_rep,'_', -1)+1)||'?'||'server='||v_repserver, '_blank');
+				
+				ELSE
+					message('Report Failure'||v_rep_status);
+				END IF;
+			    		
+	END IF;
+	
+END;
+
