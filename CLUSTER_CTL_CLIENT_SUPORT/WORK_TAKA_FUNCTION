@@ -1,0 +1,147 @@
+CREATE OR REPLACE FUNCTION POLICY_MANAGEMENT.WORK_TAKA
+                              (A_NUMBER NUMBER
+                                              )
+   RETURN CHAR
+IS
+   TYPE NUMTAB IS TABLE OF VARCHAR2 (30)
+      INDEX BY BINARY_INTEGER;
+   NUMBER_CHART   NUMTAB;
+   CRORE          NUMBER
+                        ;
+   LAKH           NUMBER
+                        ;
+   THOU           NUMBER
+                        ;
+   HUND           NUMBER
+                        ;
+   DOUBL          NUMBER
+                        ;
+   SING           NUMBER
+                        ;
+   DECI           NUMBER
+                        ;
+   TEXT           VARCHAR2 (500);
+BEGIN
+--THE TABLE
+   NUMBER_CHART (1) := 'ONE';
+   NUMBER_CHART (2) := 'TWO';
+   NUMBER_CHART (3) := 'THREE';
+   NUMBER_CHART (4) := 'FOUR';
+   NUMBER_CHART (5) := 'FIVE';
+   NUMBER_CHART (6) := 'SIX';
+   NUMBER_CHART (7) := 'SEVEN';
+   NUMBER_CHART (8) := 'EIGHT';
+   NUMBER_CHART (9) := 'NINE';
+   NUMBER_CHART (10) := 'TEN';
+   NUMBER_CHART (11) := 'ELEVEN';
+   NUMBER_CHART (12) := 'TWELVE';
+   NUMBER_CHART (13) := 'THIRTEEN';
+   NUMBER_CHART (14) := 'FOURTEEN';
+   NUMBER_CHART (15) := 'FIFTEEN';
+   NUMBER_CHART (16) := 'SIXTEEN';
+   NUMBER_CHART (17) := 'SEVENTEEN';
+   NUMBER_CHART (18) := 'EIGHTEEN';
+   NUMBER_CHART (19) := 'NINETEEN';
+   NUMBER_CHART (20) := 'TWENTY';
+   NUMBER_CHART (30) := 'THIRTY';
+   NUMBER_CHART (40) := 'FORTY';
+   NUMBER_CHART (50) := 'FIFTY';
+   NUMBER_CHART (60) := 'SIXTY';
+   NUMBER_CHART (70) := 'SEVENTY';
+   NUMBER_CHART (80) := 'EIGHTY';
+   NUMBER_CHART (90) := 'NINETY';
+   CRORE := FLOOR (A_NUMBER / 10000000);
+   LAKH := FLOOR ((A_NUMBER - TRUNC (A_NUMBER, -7)) / 100000);
+   THOU := FLOOR ((A_NUMBER - TRUNC (A_NUMBER, -5)) / 1000);
+   HUND := FLOOR ((A_NUMBER - TRUNC (A_NUMBER, -3)) / 100);
+   DOUBL := TRUNC (A_NUMBER - TRUNC (A_NUMBER, -2), 0);
+   SING := TRUNC (A_NUMBER - TRUNC (A_NUMBER, -1), 0);
+   DECI := (A_NUMBER - TRUNC (A_NUMBER, 0)) * 100;
+   IF CRORE <> 0
+   THEN
+      TEXT := WORK_TAKA (CRORE) || ' ' || 'CRORE ';
+   END IF;
+   IF LAKH <> 0
+   THEN
+      IF (LAKH <= 20) OR (LAKH MOD 10 = 0)
+      THEN
+         TEXT := TEXT || NUMBER_CHART (LAKH) || ' LAC ';
+      ELSE
+         TEXT :=
+                TEXT
+             || NUMBER_CHART (TRUNC (LAKH, -1))
+             || ' '
+             || NUMBER_CHART (TRUNC (LAKH, 0) - TRUNC (LAKH, -1))
+             || ' LAC ';
+      END IF;
+   END IF;
+   IF THOU <> 0
+   THEN
+      IF (THOU <= 20) OR (THOU MOD 10 = 0)
+      THEN
+         TEXT := TEXT || NUMBER_CHART (THOU) || ' THOUSAND ';
+      ELSE
+         TEXT :=
+                TEXT
+             || NUMBER_CHART (TRUNC (THOU, -1))
+             || ' '
+             || NUMBER_CHART (TRUNC (THOU, 0) - TRUNC (THOU, -1))
+             || ' THOUSAND ';
+      END IF;
+   END IF;
+   IF HUND <> 0
+   THEN
+      IF (HUND <= 20) OR (HUND MOD 10 = 0)
+      THEN
+         TEXT := TEXT || NUMBER_CHART (HUND) || ' HUNDRED ';
+      ELSE
+         TEXT :=
+                TEXT
+             || NUMBER_CHART (TRUNC (HUND, -1))
+             || ' '
+             || NUMBER_CHART (TRUNC (HUND, 0) - TRUNC (HUND, -1))
+             || ' HUNDRED ';
+      END IF;
+   END IF;
+   IF DOUBL <> 0
+   THEN
+      IF (DOUBL <= 20) OR (DOUBL MOD 10 = 0)
+      THEN
+         TEXT := TEXT || NUMBER_CHART (DOUBL) || ' ';
+      ELSE
+         TEXT :=
+                TEXT
+             || NUMBER_CHART (TRUNC (DOUBL, -1))
+             || ' '
+             || NUMBER_CHART (TRUNC (DOUBL, 0) - TRUNC (DOUBL, -1))
+             || ' ';
+      END IF;
+   END IF;
+   IF DECI <> 0
+   THEN
+      IF (DECI <= 20) OR (DECI MOD 10 = 0)
+      THEN
+         TEXT := TEXT || 'AND ' || NUMBER_CHART (DECI) || ' PAISA ';
+      ELSE
+         TEXT :=
+                TEXT
+             || 'AND '
+             || NUMBER_CHART (TRUNC (DECI, -1))
+             || ' '
+             || NUMBER_CHART (TRUNC (DECI, 0) - TRUNC (DECI, -1))
+             || ' PAISA ';
+      END IF;
+   END IF;
+   TEXT:=REPLACE(TEXT,'ONLY.','');
+   IF TEXT IS NOT NULL
+   THEN
+      RETURN (TEXT || 'ONLY.');
+   ELSE
+      RETURN (TEXT);
+   END IF;
+/*ADVICE(159): LAST STATEMENT IN FUNCTION MUST BE A RETURN [510] */
+END WORK_TAKA;
+/*ADVICE(162): FUNCTION WITH MORE THAN ONE RETURN STATEMENT IN THE EXECUTABLE
+              SECTION [512] */
+/
+ 

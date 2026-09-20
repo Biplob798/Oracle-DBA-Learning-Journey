@@ -1,0 +1,2 @@
+
+/u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/reports/bin/rwconverter.sh userid=system/oracle123@proddb source=INCHARGE_TARGET_BUSINESS.rdf dest=INCHARGE_TARGET_BUSINESS.rep batch=yes

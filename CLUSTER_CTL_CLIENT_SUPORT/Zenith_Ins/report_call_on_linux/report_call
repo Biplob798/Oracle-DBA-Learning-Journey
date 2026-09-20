@@ -10,7 +10,7 @@ PROCEDURE REPORT_PROCESS IS
 	v_rep_status  VARCHAR2(200);
 	v_param 			VARCHAR2(200) 	:= NULL;
 	v_valor 			VARCHAR2(200);
-	v_url 				VARCHAR2(2000):='http://192.168.3.70:9002/reports/rwservlet';
+	v_url 				VARCHAR2(2000)  :='http://192.168.3.70:9002/reports/rwservlet';
 	v_repserver 	VARCHAR2(500) 	:='zenithrepserver1';
 	v_report varchar2(200);
 	v_PARAMETRO varchar2(100) 		:= '';
