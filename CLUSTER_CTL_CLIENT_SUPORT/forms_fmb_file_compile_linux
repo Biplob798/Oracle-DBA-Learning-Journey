@@ -1,0 +1,1 @@
+/u02/app/oracle/product/12.2.1/bin/frmcmp userid=system/oracle123@proddb module=BEFTN_MB_BANK_POSTING.fmb module_type=form window_state=minimize

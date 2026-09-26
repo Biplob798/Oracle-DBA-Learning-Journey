@@ -1,0 +1,22 @@
+cd /u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/bin
+
+nohup ./startNodeManager.sh > nodemanager.out 2>&1 &
+
+nohup ./startWebLogic.sh > weblogic.out 2>&1 &
+
+nohup ./startManagedWebLogic.sh WLS_FORMS > forms.out 2>&1 &
+
+nohup ./startManagedWebLogic.sh WLS_REPORTS > reports.out 2>&1 &
+
+
+
+cd /u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/bin
+./startComponent.sh ohs1
+
+cd /u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/bin
+./startComponent.sh ZenithRepTools1
+
+cd /u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/bin
+./startComponent.sh ZenithRepServer1
+
+./stopComponent.sh ZenithRepServer1

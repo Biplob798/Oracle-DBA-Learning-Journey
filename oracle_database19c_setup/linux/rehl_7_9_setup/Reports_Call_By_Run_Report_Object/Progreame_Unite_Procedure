@@ -1,0 +1,53 @@
+
+PROCEDURE GENERATE_REPORT(P_PARA IN ParamList, P_REP IN VARCHAR2) IS
+   repid           REPORT_OBJECT;
+   v_rep           VARCHAR2(100);
+   rep_status      VARCHAR2(20);
+   vjob_id         VARCHAR2(100) := '';
+   v_rep_server    VARCHAR2(1000) := '';
+   v_url           VARCHAR2(1000) := '';
+   pl_id           ParamList;
+   pl_name         VARCHAR2(10) := 'RP';
+   v_REPORT_DESNAME VARCHAR2(2000) := '';
+   v_RepLoc        VARCHAR2(4000) := '';
+   v_HostComandP   VARCHAR2(4000) := '';
+   v_url_path      VARCHAR2(2000) := '';
+BEGIN
+   pl_id := Get_Parameter_List(pl_name);
+   IF Id_Null(pl_id) THEN
+      NULL;
+   ELSE
+      Destroy_Parameter_List(pl_name);
+   END IF;
+
+   hr.Dpr_Run_Report_jobid('HR', v_rep_server, v_RepLoc, v_url_path);
+
+   pl_id := P_PARA;
+   repid := find_report_object('RP_DEPT_TEST');
+
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_FILENAME, v_RepLoc || P_REP);
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_EXECUTION_MODE, BATCH);
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_COMM_MODE, SYNCHRONOUS);
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_SERVER, v_rep_server);
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_DESTYPE, CACHE);
+   SET_REPORT_OBJECT_PROPERTY(repid, REPORT_DESFORMAT, 'PDF');
+
+   v_rep := RUN_REPORT_OBJECT(repid, pl_id);
+   rep_status := REPORT_OBJECT_STATUS(v_rep);
+
+   vjob_id := SUBSTR(v_rep, INSTR(v_rep, '_', -1) + 1);
+
+   IF rep_status = 'FINISHED' THEN
+      MESSAGE('Report Completed: ' || get_report_object_property(repid, REPORT_FILENAME), NO_ACKNOWLEDGE);
+      v_REPORT_DESNAME := vjob_id || '.pdf';
+
+      WEB.SHOW_DOCUMENT(v_url_path || '/getjobid' || LTRIM(vjob_id, '_') || '?server=' || v_rep_server, '_blank');
+   ELSE
+      MESSAGE('Error when running report.' || get_report_object_property(repid, REPORT_FILENAME), NO_ACKNOWLEDGE);
+   END IF;
+
+EXCEPTION
+   WHEN OTHERS THEN
+      MESSAGE('Error ' || get_report_object_property(repid, REPORT_FILENAME) || SQLERRM, NO_ACKNOWLEDGE);
+END;
+
