@@ -1,0 +1,15 @@
+cd C:\Users\LENOVO\Documents
+
+
+mkdir mysql-ubuntu
+cd mysql-ubuntu
+
+pwd
+
+docker --version
+docker ps
+
+
+# Check port 3306 is free:
+
+netstat -ano | findstr :3306
