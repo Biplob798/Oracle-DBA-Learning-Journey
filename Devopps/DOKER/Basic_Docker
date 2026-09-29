@@ -1,0 +1,319 @@
+============ Docker Command List =============
+
+docker ps  -- to see container list run
+docker ps -a  -- to see container list all
+docker run -it ubuntu:24.04 bash  --create container default name
+
+docker run -it ubuntu:24.04 sh
+
+
+
+
+docker run --name my_ubuntu -it ubuntu:24.04 sh  --create container custome name
+
+docker exec -it my_ubuntu bash -- manualy run a container
+
+docker exec -it 78ed807285ef bash --if not set custome name [ -i=>stdin=>standard input and -t=>tseudo tty
+
+
+ls/dir
+
+
+docker build . -- for run container and create image (default name )
+
+
+docker build -t custom_ubuntu .  -- for run container and create image (manualy set name )
+
+docker run -it custom_ubuntu bash  -- run image
+
+===================================
+
+
+# 1. pull the ubuntu image
+docker pull ubuntu:24.04
+
+# 2. run a container from the ubuntu image
+
+docker run -it ubuntu:24.04 bash
+
+# 3. go inside the container
+ls
+
+# 4. now install go on this container
+
+apt update
+
+apt install -y golang
+
+# check version
+
+go version
+
+# now create a dir ( app ) in this container
+
+mkdir app
+
+# copy server.go file from host machine to docker container /app/server.go 
+
+==========================================================================
+
+
+
+# 1. pull the ubuntu image  ==>ubuntu:24.04 ==> docker rmi -f  008173c23f95
+docker pull ubuntu:24.04
+
+# 2. run a container from the ubuntu image ==> run image
+
+docker run -it ubuntu:24.04 bash [(ubuntu:24.04 this a image) and (1.docker run -it ubuntu:24.04 sh 2.docker run -it ubuntu:24.04 bash ) both are indivitual a container here]
+
+# 3. go inside the container
+ls
+
+# 4. now install go on this container
+
+apt update
+
+
+# Update package list and install MySQL server
+apt update && apt install -y mysql-server
+
+# mkdir -p /nonexistent && chown mysql:mysql /nonexistent
+
+# Start the MySQL service
+service mysql start
+
+# Log into MySQL shell as root
+mysql -u root
+
+
+
+# 5. Create a database and switch to it
+CREATE DATABASE my_database;
+USE my_database;
+
+# 6. Create a table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+# 6. Insert 2 demo rows of data
+
+INSERT INTO users (name, email) VALUES 
+('Alice Johnson', 'alice@example.com'),
+('Bob Smith', 'bob@example.com');
+
+#7. USE my_database;
+
+# 8. Query the inserted data
+SELECT * FROM users;
+
+SELECT * FROM my_database.users;
+
+===================================================
+## For Reconnection any Image ===============
+
+# Start the container
+
+docker start f452204ffbb1
+
+#Enter the container shell
+docker exec -it f452204ffbb1 bash
+#Start MySQL and query your table
+
+service mysql start
+mysql -u root
+
+USE my_database;
+SELECT * FROM users;
+
+
+========================================================
+
+
+Docker Image = A Blueprint or Template (like a fresh OS installer ISO, e.g., Ubuntu 24.04).
+
+Docker Container = A Running Instance created from that blueprint (like a virtual machine or a running isolated computer).
+
+Just like you can install multiple independent OS instances from a single ISO file, you can create as many isolated containers as you want from a single Docker image.
+
+=========================================================================================
+
+
+
+============  manually create a image on docker  and create a container base on this image =================
+
+# first create a diroctory 
+
+1. mkdir manual_image
+
+2. cd manual_image
+3. code .
+4. now create a file name => Dockerfile 
+
+== in file this code  ===
+
+FROM ubuntu:24.04
+RUN echo "Hello World" > /hello.txt
+CMD ["cat " , "/hello.txt"]
+
+
+
+# now we run this file and create a docker image 
+
+# run this commade 
+
+docker build .  => this image build without name 
+
+
+
+=========================
+
+
+Spot on! That is the core lifecycle of Docker in a nutshell.
+
+
+# Image (The Blueprint): Contains the operating system, code, dependencies, and configuration. It is read-only and static.
+# Container (The Running Process): Built directly from the image. It provides an isolated workspace where you install software, run applications, or manage databases.
+
+
+Everything you do in Docker—whether building a custom Dockerfile app, running MySQL, or spinning up Linux servers—follows this exact Image $\rightarrow$ Container path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+===================================================================
+
+
+ Linux Core & Bash Scripting
+             │
+             ▼
+ Docker & Dockerfile 
+             │
+             ▼
+ Docker Compose (মাল্টি-কনটেইনার সেটআপ)
+             │
+             ▼
+ CI/CD Pipelines (Automated Build & Deploy)
+             │
+             ▼
+ Infrastructure as Code (Terraform) / Kubernetes
+        
+===================================================================
+
+Step 1: Check Docker is installed
+
+docker --version
+
+Step 2: Create a project folder
+
+mkdir mysql-project
+cd mysql-project
+
+Step 3: Create the Dockerfile
+
+FROM mysql:8.0
+
+ENV MYSQL_ROOT_PASSWORD=RootPass@123
+
+EXPOSE 3306
+
+Step 4: Build the image
+
+
+docker build -t my-mysql-image .
+
+
+Check that it exists:
+
+docker images
+
+Step 1: Run the container
+
+docker run -d --name my-mysql-container -p 3306:3306 -v mysql_data:/var/lib/mysql my-mysql-image
+
+
+Step 2: Check it's running
+
+
+docker ps
+docker logs my-mysql-container
+
+
+Step 3: Open MySQL inside the container
+
+
+docker exec -it my-mysql-container mysql -u root -p   ==>  Enter the password (  RootPass@123 )
+
+
+
+Step 4: Continue with the SQL steps
+
+
+CREATE DATABASE company_db;
+
+CREATE USER 'appuser'@'%' IDENTIFIED BY 'AppPass@123';
+GRANT ALL PRIVILEGES ON company_db.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
+
+EXIT;
+
+
+Then log in as the new user:
+
+
+docker exec -it my-mysql-container mysql -u appuser -p company_db
+
+Password: AppPass@123
+
+
+Then create the table, insert data, and query it
+
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    department VARCHAR(50),
+    salary DECIMAL(10,2),
+    hire_date DATE
+);
+
+INSERT INTO employees (name, email, department, salary, hire_date) VALUES
+('Rahim Uddin', 'rahim@example.com', 'IT', 60000.00, '2023-01-15'),
+('Karim Hasan', 'karim@example.com', 'HR', 45000.00, '2022-06-10'),
+('Sadia Akter', 'sadia@example.com', 'Finance', 55000.00, '2021-09-01'),
+('Nusrat Jahan', 'nusrat@example.com', 'IT', 65000.00, '2020-03-20'),
+('Tanvir Ahmed', 'tanvir@example.com', 'Marketing', 48000.00, '2024-02-05');
+
+SELECT * FROM employees;
+SELECT department, COUNT(*) AS total, AVG(salary) AS avg_salary FROM employees GROUP BY department;
+
+
+==== After restart pc to connect ====
+
+# Start the container
+
+
+docker start my-mysql-container
+
+# Connect
+
+docker exec -it my-mysql-container mysql -u appuser -p company_db
+
+
+Password: AppPass@123
+
+
+SELECT * FROM employees;
