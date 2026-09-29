@@ -1,0 +1,1 @@
+http://192.168.3.70:9002/reports/rwservlet?report=LEAVE_STATEMENT.rdf&userid=system/oracle123@proddb&server=zenithrepserver1&destype=cache&desformat=PDF
