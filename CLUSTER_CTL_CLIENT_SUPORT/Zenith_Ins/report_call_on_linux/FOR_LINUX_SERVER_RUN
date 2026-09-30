@@ -20,3 +20,9 @@ cd /u02/app/oracle/product/12.2.1/user_projects/domains/base_domain/bin
 ./startComponent.sh ZenithRepServer1
 
 ./stopComponent.sh ZenithRepServer1
+
+
+tail -f nodemanager.out
+	tail -f weblogic.out
+	tail -f forms.out
+  	tail -f reports.out
