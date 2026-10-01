@@ -1,0 +1,21 @@
+Running a basic web server
+
+# docker run -it --rm -d -p 8080:80 --name web nginx
+# http://localhost:8080
+$ docker stop web
+** Customize page
+vim ~/site-content
+$ docker run -it --rm -d -p 8080:80 --name web -v ~/site-content:/usr/share/nginx/html nginx
+
+
+Build Custom NGINX Image
+vim dockerfile
+FROM nginx:latest
+COPY ./index.html /usr/share/nginx/html/index.html
+$ docker build -t webserver .
+$ sudo docker run -it --rm -d -p 8080:80 --name web8 webserver
+
+upload image
+$ docker login
+$ docker tag webserver kaisarkhan1981/webserver
+$ docker push kaisarkhan1981/webserver
