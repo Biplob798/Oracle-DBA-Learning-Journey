@@ -1,0 +1,25 @@
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+
+
+
+STARTUP;
+
+
+ALTER SYSTEM SET LOCAL_LISTENER='(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.0.205)(PORT=1524))' SCOPE=BOTH;
+ALTER SYSTEM REGISTER;
+ALTER USER hr ACCOUNT UNLOCK;
+EXIT;
+
+
+--Open the firewall (needs root, not the oracle user)
+
+lsnrctl start lvm1524      # skip if it is already running
+lsnrctl status lvm1524
+
+-- test from windows command line
+Test-NetConnection 192.168.0.205 -Port 1524
+
+-- test from linux command line
+
+nc -zv 192.168.0.205 1524

@@ -1,0 +1,16 @@
+Container link & docker compose
+
+5. go to result folder
+# docker build . -t result-app
+# docker run --name=result -p 5004:80 --link db:db result-app
+
+▪ Install docker compose
+  ▪ Dependencies
+
+py-pip, python3-dev, libffi-dev, openssl-dev, gcc, libc-dev, rust, cargo and make
+
+
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+
+More details Install Docker Compose | Docker Documentation
