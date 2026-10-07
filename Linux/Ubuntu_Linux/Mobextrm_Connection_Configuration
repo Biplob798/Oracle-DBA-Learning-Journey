@@ -1,0 +1,5 @@
+ -- run this command and install the packge --
+ sudo systemctl status sshd
+ sudo apt install openssh-server -y
+ sudo systemctl enable --now ssh
+ sudo systemctl status ssh
