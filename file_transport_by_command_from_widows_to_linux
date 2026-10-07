@@ -1,0 +1,1 @@
+ scp -r C:\Users\LENOVO\Documents\HR-MANAGEMENT-DOCKER appuser@192.168.0.219:/u01/app/
