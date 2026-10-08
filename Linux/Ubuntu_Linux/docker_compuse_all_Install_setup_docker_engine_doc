@@ -72,6 +72,12 @@ exit
 
 scp -r C:\Users\LENOVO\Documents\HR-MANAGEMENT-DOCKER cluster@192.168.0.219:/u01/app/
 
+# Clone from GitHub on the server instead:
+
+cd /u01/app
+git clone https://github.com/Biplob798/HR-MANAGEMENT-DOCKER.git
+
+
 #Check Oracle and the path to it
 
 export ORACLE_SID=dblcluster
