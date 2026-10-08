@@ -1,0 +1,145 @@
+# create dir from cluster user
+sudo mkdir -p /u01
+
+# give permission this folder to use cluster user
+
+sudo chmod 755 /u01
+
+
+# install Docker Engine first:
+sudo apt update
+sudo apt install -y ca-certificates curl git nano
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io \
+  docker-buildx-plugin docker-compose-plugin
+
+
+  # Create the folders in /u01
+
+
+  sudo mkdir -p /u01/app /u01/docker-data
+sudo chown -R cluster:cluster /u01/app
+sudo chmod 755 /u01 /u01/app
+
+
+# Move Docker's data to /u01/docker-data
+
+sudo systemctl stop docker docker.socket
+echo '{ "data-root": "/u01/docker-data" }' | sudo tee /etc/docker/daemon.json
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# for Check:
+sudo docker info | grep "Docker Root Dir"
+
+
+# Let cluster run Docker without sudo
+
+
+sudo usermod -aG docker cluster
+
+
+# Then log out and log in again (or open a new MobaXterm session). Check:
+
+
+id
+docker run --rm hello-world
+
+# Put the project in /u01/app
+
+From Windows PowerShell:
+# On Windows PowerShell, remove the old key
+ssh-keygen -R 192.168.0.219
+
+# Connect once and accept the new key
+
+ssh cluster@192.168.0.219
+
+exit
+
+# Copy the project
+
+
+scp -r C:\Users\LENOVO\Documents\HR-MANAGEMENT-DOCKER cluster@192.168.0.219:/u01/app/
+
+#Check Oracle and the path to it
+
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+SQL> startup
+SQL> ALTER SYSTEM REGISTER;
+SQL> EXIT
+lsnrctl start lvm1524
+lsnrctl status lvm1524
+
+# Then from this server:
+
+timeout 3 bash -c '</dev/tcp/192.168.0.205/1524' && echo "PORT OPEN" || echo "PORT CLOSED"
+
+## Deploy
+
+cd /u01/app/HR-MANAGEMENT-DOCKER
+docker compose up -d --build
+docker compose ps
+docker compose logs backend
+
+# Test
+
+curl http://localhost:8080/api/health
+curl http://localhost:8080/api/regions
+
+Open http://192.168.0.219:8080 in your Windows browser.
+
+# Final layout
+
+/u01/
+├── app/HR-MANAGEMENT-DOCKER/   project and .env   (owner: cluster)
+└── docker-data/                Docker images and data (owner: root)
+
+
+#  After restarting your Ubuntu machine
+
+sudo systemctl status docker        # should say active (running); press q to exit
+cd /u01/app/HR-MANAGEMENT-DOCKER
+docker compose ps                   # backend and frontend should say Up
+
+
+Then open http://192.168.0.219:8080
+
+# If the containers are not running
+
+cd /u01/app/HR-MANAGEMENT-DOCKER
+docker compose up -d
+
+# If Docker itself is not running:
+
+sudo systemctl start docker
+sudo systemctl enable docker        # makes it start on every boot
+
+# Start the Oracle VM 
+
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+SQL> startup
+SQL> ALTER SYSTEM REGISTER;
+SQL> EXIT
+lsnrctl start lvm1524
+lsnrctl status lvm1524              # must list the service dblcluster
+
+# Useful commands
+
+docker compose ps                    # status
+docker compose logs -f backend       # logs, Ctrl+C to exit
+docker compose restart backend       # restart only the backend
+docker compose down                  # stop everything
+docker compose up -d                 # start everything
