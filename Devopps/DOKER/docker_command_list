@@ -1,0 +1,19 @@
+# The commands you’ll use every day
+
+
+docker ps               # list running containers
+docker ps -a            # include stopped ones
+docker logs web         # see output
+docker logs -f web      # follow live
+docker exec -it web sh  # open a shell inside it
+docker stop web         # stop it
+docker start web        # start it again
+docker rm web           # delete it (must be stopped)
+docker images           # list downloaded images
+docker rmi nginx        # delete an image
+
+
+docker system df          # see disk usage
+docker container prune    # remove stopped containers
+docker image prune        # remove unused images
+docker system prune       # remove all of the above

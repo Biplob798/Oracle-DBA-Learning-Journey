@@ -1,0 +1,9 @@
+# Run as Administrator
+# Turn off hypervisor
+bcdedit /set hypervisorlaunchtype off
+
+
+# Turn on hypervisor
+bcdedit /set hypervisorlaunchtype auto
+
+# To apply the changes, you will need to restart your computer after running the above commands.
