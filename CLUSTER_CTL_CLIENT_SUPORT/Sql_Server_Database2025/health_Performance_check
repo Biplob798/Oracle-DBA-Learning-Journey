@@ -1,0 +1,115 @@
+# Step 1: Create a database for your DBA tools
+
+CREATE DATABASE DBAdmin;
+GO
+
+# Step 2: Set safe server settings
+
+EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+
+-- Change 6144 to: total RAM in MB minus 2048-4096 (leave memory for Windows)
+EXEC sp_configure 'max server memory (MB)', 6144; RECONFIGURE;
+
+EXEC sp_configure 'backup compression default', 1; RECONFIGURE;
+EXEC sp_configure 'cost threshold for parallelism', 50; RECONFIGURE;
+EXEC sp_configure 'optimize for ad hoc workloads', 1; RECONFIGURE;
+
+
+# Disk space
+
+SELECT DISTINCT vs.volume_mount_point,
+       vs.total_bytes/1073741824 AS total_gb,
+       vs.available_bytes/1073741824 AS free_gb
+FROM sys.master_files mf
+CROSS APPLY sys.dm_os_volume_stats(mf.database_id, mf.file_id) vs;
+
+
+
+# 1. Version, uptime, hardware. Check uptime first, because many statistics reset on restart.
+
+SELECT @@SERVERNAME AS server, @@VERSION AS version,
+       sqlserver_start_time, cpu_count, physical_memory_kb/1024 AS ram_mb
+FROM sys.dm_os_sys_info;
+
+# Key settings
+
+SELECT name, value_in_use FROM sys.configurations
+WHERE name IN ('max server memory (MB)','max degree of parallelism',
+               'cost threshold for parallelism','optimize for ad hoc workloads');
+
+
+# Databases: size, state, recovery model
+
+
+SELECT d.name, d.state_desc, d.recovery_model_desc, d.compatibility_level,
+       d.page_verify_option_desc, d.is_auto_shrink_on, d.is_auto_close_on,
+       SUM(mf.size)*8/1024 AS size_mb
+FROM sys.databases d
+JOIN sys.master_files mf ON mf.database_id = d.database_id
+GROUP BY d.name, d.state_desc, d.recovery_model_desc, d.compatibility_level,
+         d.page_verify_option_desc, d.is_auto_shrink_on, d.is_auto_close_on;
+
+
+# Backups: the most important health question
+
+SELECT d.name, d.recovery_model_desc,
+       MAX(CASE WHEN b.type='D' THEN b.backup_finish_date END) AS last_full,
+       MAX(CASE WHEN b.type='L' THEN b.backup_finish_date END) AS last_log
+FROM sys.databases d
+LEFT JOIN msdb.dbo.backupset b ON b.database_name = d.name
+WHERE d.name <> 'tempdb'
+GROUP BY d.name, d.recovery_model_desc;
+
+
+# Last successful integrity check
+
+
+SELECT name, DATABASEPROPERTYEX(name,'LastGoodCheckDbTime') AS last_good_checkdb
+FROM sys.databases WHERE name <> 'tempdb';
+
+# Errors and failed jobs
+
+
+EXEC sp_readerrorlog 0, 1, N'error';
+
+SELECT j.name, h.run_date, h.run_time, h.message
+FROM msdb.dbo.sysjobhistory h
+JOIN msdb.dbo.sysjobs j ON j.job_id = h.job_id
+WHERE h.run_status = 0 AND h.step_id = 0
+ORDER BY h.instance_id DESC;
+
+#  Security basics
+
+
+SELECT p.name AS sysadmin_member
+FROM sys.server_role_members rm
+JOIN sys.server_principals r ON rm.role_principal_id = r.principal_id
+JOIN sys.server_principals p ON rm.member_principal_id = p.principal_id
+WHERE r.name = 'sysadmin';
+
+SELECT name, is_disabled FROM sys.server_principals WHERE name = 'sa';
+
+# Performance: what is happening right now
+
+
+SELECT r.session_id, r.blocking_session_id, r.status, r.wait_type,
+       r.cpu_time, r.total_elapsed_time, t.text
+FROM sys.dm_exec_requests r
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+WHERE r.session_id > 50;
+
+#  Performance: disk speed per file
+
+
+SELECT DB_NAME(vfs.database_id) AS db, mf.physical_name,
+       vfs.io_stall_read_ms  / NULLIF(vfs.num_of_reads,0)  AS avg_read_ms,
+       vfs.io_stall_write_ms / NULLIF(vfs.num_of_writes,0) AS avg_write_ms
+FROM sys.dm_io_virtual_file_stats(NULL,NULL) vfs
+JOIN sys.master_files mf ON mf.database_id = vfs.database_id AND mf.file_id = vfs.file_id
+ORDER BY avg_read_ms DESC;
+
+
+# Performance: memory pressure
+
+SELECT counter_name, cntr_value FROM sys.dm_os_performance_counters
+WHERE counter_name IN ('Page life expectancy','Memory Grants Pending');

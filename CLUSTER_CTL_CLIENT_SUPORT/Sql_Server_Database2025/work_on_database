@@ -1,0 +1,156 @@
+# Step 1: Create the database
+
+USE master;
+GO
+CREATE DATABASE CompanyDB;
+GO
+
+# Check that it exists:
+
+SELECT name, state_desc FROM sys.databases WHERE name = 'CompanyDB';
+
+# Step 2: Create the user
+
+USE master;
+GO
+CREATE LOGIN app_user WITH PASSWORD = 'AppUser#2026Strong!',
+      CHECK_POLICY = ON, DEFAULT_DATABASE = CompanyDB;
+GO
+
+USE CompanyDB;
+GO
+CREATE USER app_user FOR LOGIN app_user;
+ALTER ROLE db_datareader ADD MEMBER app_user;   -- can SELECT
+ALTER ROLE db_datawriter ADD MEMBER app_user;   -- can INSERT, UPDATE, DELETE
+GO
+
+# Step 3: Create the tables
+
+USE CompanyDB;
+GO
+
+CREATE TABLE dbo.departments (
+    department_id   INT PRIMARY KEY,
+    department_name NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE dbo.employees (
+    employee_id   INT IDENTITY(1,1) PRIMARY KEY,
+    first_name    NVARCHAR(30)  NOT NULL,
+    last_name     NVARCHAR(30)  NOT NULL,
+    email         NVARCHAR(60)  NOT NULL UNIQUE,
+    hire_date     DATE          NOT NULL,
+    salary        DECIMAL(10,2) NOT NULL,
+    department_id INT           NOT NULL
+        REFERENCES dbo.departments(department_id)
+);
+GO
+
+# Step 4: Insert demo data
+
+USE CompanyDB;
+GO
+
+INSERT INTO dbo.departments (department_id, department_name) VALUES
+    (10, 'Administration'),
+    (20, 'Sales'),
+    (30, 'IT'),
+    (40, 'Finance');
+
+INSERT INTO dbo.employees (first_name, last_name, email, hire_date, salary, department_id) VALUES
+    ('Steven',  'King',    'sking@demo.com',   '2020-06-17', 24000, 10),
+    ('Neena',   'Kochhar', 'nkochhar@demo.com','2021-09-21', 17000, 10),
+    ('John',    'Russell', 'jrussell@demo.com','2021-10-01', 14000, 20),
+    ('Karen',   'Partners','kpartners@demo.com','2022-01-05', 13500, 20),
+    ('Peter',   'Tucker',  'ptucker@demo.com', '2022-01-30', 10000, 20),
+    ('Alexander','Hunold', 'ahunold@demo.com', '2022-03-03',  9000, 30),
+    ('Bruce',   'Ernst',   'bernst@demo.com',  '2023-05-21',  6000, 30),
+    ('David',   'Austin',  'daustin@demo.com', '2023-06-25',  4800, 30),
+    ('Nancy',   'Greenberg','ngreenberg@demo.com','2020-08-17',12000, 40),
+    ('Daniel',  'Faviet',  'dfaviet@demo.com', '2021-08-16',  9000, 40);
+GO
+
+# Step 5: Query the data
+
+USE CompanyDB;
+GO
+
+-- 1. All employees
+SELECT * FROM dbo.employees;
+
+-- 2. Filter and sort
+SELECT first_name, last_name, salary
+FROM dbo.employees
+WHERE salary > 10000
+ORDER BY salary DESC;
+
+-- 3. Join with departments
+SELECT e.employee_id, e.first_name, e.last_name,
+       d.department_name, e.salary
+FROM dbo.employees e
+JOIN dbo.departments d ON e.department_id = d.department_id
+ORDER BY d.department_name, e.last_name;
+
+-- 4. Count, average and total per department
+SELECT d.department_name,
+       COUNT(*)      AS employees,
+       AVG(e.salary) AS avg_salary,
+       SUM(e.salary) AS total_salary
+FROM dbo.employees e
+JOIN dbo.departments d ON e.department_id = d.department_id
+GROUP BY d.department_name
+ORDER BY total_salary DESC;
+
+-- 5. Top 3 highest paid (Oracle: FETCH FIRST 3 ROWS ONLY)
+SELECT TOP 3 first_name, last_name, salary
+FROM dbo.employees
+ORDER BY salary DESC;
+
+-- 6. Hired in 2022
+SELECT first_name, last_name, hire_date
+FROM dbo.employees
+WHERE hire_date >= '2022-01-01' AND hire_date < '2023-01-01';
+
+-- 7. Highest paid person in each department
+SELECT department_name, first_name, last_name, salary
+FROM (
+    SELECT d.department_name, e.first_name, e.last_name, e.salary,
+           ROW_NUMBER() OVER (PARTITION BY e.department_id ORDER BY e.salary DESC) AS rn
+    FROM dbo.employees e
+    JOIN dbo.departments d ON e.department_id = d.department_id
+) x
+WHERE rn = 1;
+
+
+#  Step 6: Test the new user
+
+Run this as Administrator. EXECUTE AS makes your session act as app_user, and REVERT switches back.
+
+
+USE CompanyDB;
+GO
+EXECUTE AS USER = 'app_user';
+SELECT SUSER_NAME() AS login_name, USER_NAME() AS db_user;
+
+SELECT COUNT(*) AS total_employees FROM dbo.employees;        -- works
+
+BEGIN TRAN;
+UPDATE dbo.employees SET salary = salary + 500 WHERE employee_id = 1;   -- works
+ROLLBACK;                                                      -- undo it
+
+CREATE TABLE dbo.should_fail (id INT);                         -- fails: permission denied
+REVERT;
+GO
+SELECT SUSER_NAME() AS back_to;                                -- should show your Administrator login
+
+
+# Step 7: Clean up (optional)
+
+USE master;
+GO
+ALTER DATABASE CompanyDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE CompanyDB;
+GO
+DROP LOGIN app_user;
+GO
+
