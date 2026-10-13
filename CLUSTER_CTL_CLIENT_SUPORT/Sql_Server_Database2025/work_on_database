@@ -1,4 +1,24 @@
+# To see which user i have now 
+
+
+SELECT SUSER_NAME(), USER_NAME();
+
+# Create a user
+
+CREATE LOGIN app WITH PASSWORD='pw'; then CREATE USER app FOR LOGIN app;
+
+# Grant object rights
+
+GRANT SELECT, INSERT ON dbo.emp TO app;
+
+# Create and use a role
+
+CREATE ROLE r; ALTER ROLE r ADD MEMBER app;
+
+
+
 # Step 1: Create the database
+
 
 USE master;
 GO
