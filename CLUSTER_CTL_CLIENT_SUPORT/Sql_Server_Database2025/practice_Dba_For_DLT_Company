@@ -1,0 +1,116 @@
+#  Step 1: Create the database
+
+USE master;
+GO
+CREATE DATABASE DemoDB;
+GO
+SELECT name, state_desc FROM sys.databases WHERE name = 'DemoDB';
+
+
+# Step 2: Create the user and give it all privileges
+
+
+USE master;
+GO
+CREATE LOGIN demo_admin WITH PASSWORD = 'DemoAdmin#2026Strong!',
+      CHECK_POLICY = ON, DEFAULT_DATABASE = DemoDB;
+GO
+USE DemoDB;
+GO
+CREATE USER demo_admin FOR LOGIN demo_admin;
+ALTER ROLE db_owner ADD MEMBER demo_admin;
+GO
+
+# Step 4: Create the tables
+
+
+USE DemoDB;
+GO
+CREATE TABLE dbo.departments (
+    department_id   INT PRIMARY KEY,
+    department_name NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE dbo.employees (
+    employee_id   INT IDENTITY(1,1) PRIMARY KEY,
+    first_name    NVARCHAR(30)  NOT NULL,
+    last_name     NVARCHAR(30)  NOT NULL,
+    email         NVARCHAR(60)  NOT NULL UNIQUE,
+    hire_date     DATE          NOT NULL,
+    salary        DECIMAL(10,2) NOT NULL,
+    department_id INT           NOT NULL REFERENCES dbo.departments(department_id)
+);
+GO
+
+# Step 5: Insert demo data and check it
+
+USE DemoDB;
+GO
+INSERT INTO dbo.departments (department_id, department_name) VALUES
+    (10,'Administration'),(20,'Sales'),(30,'IT'),(40,'Finance');
+
+INSERT INTO dbo.employees (first_name, last_name, email, hire_date, salary, department_id) VALUES
+    ('Steven','King','sking@demo.com','2020-06-17',24000,10),
+    ('Neena','Kochhar','nkochhar@demo.com','2021-09-21',17000,10),
+    ('John','Russell','jrussell@demo.com','2021-10-01',14000,20),
+    ('Karen','Partners','kpartners@demo.com','2022-01-05',13500,20),
+    ('Peter','Tucker','ptucker@demo.com','2022-01-30',10000,20),
+    ('Alexander','Hunold','ahunold@demo.com','2022-03-03',9000,30),
+    ('Bruce','Ernst','bernst@demo.com','2023-05-21',6000,30),
+    ('David','Austin','daustin@demo.com','2023-06-25',4800,30),
+    ('Nancy','Greenberg','ngreenberg@demo.com','2020-08-17',12000,40),
+    ('Daniel','Faviet','dfaviet@demo.com','2021-08-16',9000,40);
+GO
+
+SELECT e.employee_id, e.first_name, e.last_name, d.department_name, e.salary
+FROM dbo.employees e
+JOIN dbo.departments d ON d.department_id = e.department_id
+ORDER BY e.employee_id;
+
+# Step 6: Prepare a folder for exports
+
+1. In File Explorer, create the folder C:\SQLExport.
+
+2.  If a later step says “Access is denied” or “cannot open file”, 
+    right-click the folder, choose Properties, then Security, and give the SQL Server service account 
+    (usually NT Service\MSSQLSERVER) Modify permission.
+
+# Step 7: Export and import one table (data only)
+
+    Use bcp, a command-line tool that installs with SQL Server. Open Command Prompt (not SSMS) and run
+
+    bcp DemoDB.dbo.employees out C:\SQLExport\employees.csv -c -t, -T -S localhost
+
+    Now import it into a copy of the table. In SSMS, create an empty copy first:
+
+    USE DemoDB;
+    GO
+    SELECT * INTO dbo.employees_copy FROM dbo.employees WHERE 1 = 0;   -- same columns, no rows
+    GO
+
+    Then back in Command Prompt:
+
+    bcp DemoDB.dbo.employees_copy in C:\SQLExport\employees.csv -c -t, -T -S localhost -E
+
+    # Step 8: Export and import the whole database 
+                
+              Option A: Backup and restore (a .bak file, the physical copy)
+
+    USE master;
+GO
+BACKUP DATABASE DemoDB TO DISK = 'C:\SQLExport\DemoDB.bak'
+WITH COMPRESSION, CHECKSUM, INIT;
+GO
+
+
+# Step 10: Clean up (optional)
+
+USE master;
+GO
+DROP DATABASE IF EXISTS DemoDB_Copy;
+DROP DATABASE IF EXISTS DemoDB_Imported;
+ALTER DATABASE DemoDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE DemoDB;
+DROP LOGIN demo_admin;
+GO
+

@@ -1,7 +1,7 @@
 # To see which user i have now 
 
 
-SELECT SUSER_NAME(), USER_NAME();
+SELECT SUSER_NAME(), USER_NAME(), DB_NAME();
 
 # Create a user
 
