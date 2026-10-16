@@ -1,0 +1,248 @@
+Understanding their pain and what success means
+
+What problems have you had with servers or vendors in the past year? (outages, slow replication, missed patches). Their answer tells you what to emphasise in your proposal.
+If this AMC works perfectly, what will you see after 12 months? This gives you a measurable success target you can report against.
+Who approves changes and signs off reports on your side? Your documents promise four-eyes approval and signed monthly reports, so you need a named person.
+
+Scope gaps in the documents
+
+How many servers are covered in total? The Linux AMC and the Subscriber AMC both refer to a primary server. Make sure all three are priced and listed.
+Who maintains the application layer on the Linux server? The Linux AMC excludes it. If nobody does, offer it as a paid add-on.
+Is there a non-production or staging server for testing patches? All three documents say “test in non-production first”. If none exists, ask who pays to create one.
+Which replication type do you use: transactional, merge or snapshot? The Subscriber AMC covers all three, and you only need to commit to the one that applies.
+What do you use for disaster recovery? The Subscriber is confirmed to be reporting-only, but the primary tasks mention a DR drill and failover tests. You need to know whether a DR site exists and who covers it.
+
+Technical and compliance details
+
+Do you hold an Ubuntu Pro (ESM) subscription for the Ubuntu 20.04 server, and do you plan to upgrade? The Linux AMC says standard support has ended, so security patches may depend on this.
+Is TDE (database encryption at rest) enabled, and is sa in use or disabled? The Subscriber AMC treats TDE as already covered, so confirm that before you promise it.
+What are your IDRA audit requirements, and what is your log and backup retention period? The documents suggest 90 days “for example”. Get the real number in writing.
+How will we get access: VPN, jump host, or on-site? Agree on SSH key-based login and RDP before the contract starts.
+
+Commercial terms (this is where you protect yourself)
+
+What response and resolution times do you expect for a Sev-1 incident (production down)? Your documents define Sev-1 and the 24-hour RCA, but they don’t state response times. Agree these now so you can meet them.
+What is the contract term, and what are the payment terms and renewal terms? For example: a 12-month term with auto-renewal.
+How should work outside the AMC be handled, such as emergency visits, upgrades or migrations? Agree a hourly or per-task rate so out-of-scope work doesn’t turn into free work.
+
+How to compromise and keep the client
+
+Trade, don’t give away. If they ask for a lower price, offer a longer term or a smaller scope in return. If they want faster response, offer it with a higher tier.
+Win in the first 30 days. Deliver an assessment report with 3 or 4 quick fixes, such as disabling sa, clearing the replication backlog, or fixing patch gaps. This builds trust quickly.
+Be reliable and visible. The weekly and monthly reports in your documents are your best tool. Clients keep vendors who show their work.
+Be honest about limits. Pointing out the application-layer gap and the 20.04 support issue yourself will make you look like an expert, not a vendor who is hiding something.
+
+
+##############################################################################################################
+FINDOUT CLIENT PROBLEM AND WHAT THEY NEED  AND WE PROVIDED OUR BEST SERVICE FROM OUR COMPANY THATS OUR TERGET
+
+##############################################################################################################
+
+QUESTIONS TO ASK THE CLIENT (AMC DISCUSSION)
+
+A. UNDERSTANDING THEIR PAIN AND GOALS
+
+1. What problems have you had with servers or vendors in the past year (outages, slow replication, missed patches)?
+
+2. If this AMC works perfectly, what will you see after 12 months?
+
+3. Who approves changes and signs off reports on your side?
+
+B. SCOPE GAPS
+
+4. How many servers are covered in total (Linux server, primary server, Subscriber server)?
+
+5. Who maintains the application layer on the Linux server, since our AMC covers only the OS layer?
+
+6. Is there a non-production or staging server for testing patches? If not, who will arrange and pay for it?
+
+7. Which replication type do you use: transactional, merge or snapshot?
+
+8. What do you use for disaster recovery (DR site, failover plan), and who is responsible for it?
+
+C. TECHNICAL AND COMPLIANCE
+
+9. Do you hold an Ubuntu Pro (ESM) subscription for the Ubuntu 20.04 server, and do you plan to upgrade the OS?
+
+10. Is TDE (encryption at rest) enabled on the databases, and is the sa account in use or disabled?
+
+11. What are your IDRA audit requirements, and what are your required log and backup retention periods?
+
+12. How will we get access to the servers: VPN, jump host or on-site? Can we use SSH key-based login and RDP?
+
+D. COMMERCIAL TERMS
+
+13. What response and resolution times do you expect for a Sev-1 incident (production down)?
+
+14. What are the contract term, payment terms and renewal terms (for example, 12 months with auto-renewal)?
+
+15. How should work outside the AMC be handled (emergency visits, upgrades, migrations), and at what hourly or per-task rate?
+
+
+HOW TO COMPROMISE AND KEEP THE CLIENT
+
+- Trade, don't give away: if they ask for a lower price, offer a longer term or a smaller scope in return. If they want faster response, offer it with a higher tier.
+- Win in the first 30 days: deliver an assessment report with 3 or 4 quick fixes (disable sa, clear the replication backlog, close patch gaps).
+- Be reliable and visible: use the weekly and monthly reports to show your work.
+- Be honest about limits: point out the application-layer gap and the Ubuntu 20.04 support issue yourself, so you look like an expert who is open with the client.
+- Treat the contract as the start of the relationship: clients who feel well served rarely leave.
+
+
+
+
+#############################################################################################################
+ALL IN ONE 
+#############################################################################################################
+
+AMC CLIENT MEETING GUIDE: QUESTIONS TO ASK + OUR RESPONSES
+
+A. UNDERSTANDING THEIR PAIN AND GOALS
+
+Q1. What problems have you had with servers or vendors in the past year (outages, slow replication, missed patches)?
+OUR RESPONSE: We start with a [30]-day assessment of all servers. It produces a findings report and 3-4 quick fixes (for example disabling sa if not needed, clearing replication backlog, closing patch gaps). After that, the weekly and monthly reports show progress.
+
+Q2. If this AMC works perfectly, what will you see after 12 months?
+OUR RESPONSE: We propose measurable targets, for example:
+ - Patch compliance of [95]% within the change window
+ - Backup success rate of [99]% with monthly restore tests passed
+ - Replication latency within the agreed threshold
+ - RCA report within 24 hours of resolution for every critical incident
+ - Weekly and monthly reports delivered on time
+
+Q3. Who approves changes and signs off reports on your side?
+OUR RESPONSE: We ask for one named approver and one backup on your side. On our side, one named lead engineer is accountable for all three servers (Linux, Primary, Subscriber), so you have a single contact.
+
+
+B. SCOPE GAPS
+
+Q4. How many servers are covered in total?
+OUR RESPONSE: Our documents cover three servers: the Linux application server (Ubuntu 20.04), the Primary server (Publisher/Distributor), and the Windows Server 2022 + MSSQL Subscriber (reporting-only). Anything beyond these is added by change request.
+
+Q5. Who maintains the application layer on the Linux server?
+OUR RESPONSE: Our AMC covers the Linux/OS layer only. If you want us to cover the web server, app runtime and application logs, we can add a separate Application-Layer annex, priced separately, once the stack details are confirmed.
+
+Q6. Is there a non-production or staging server for testing patches?
+OUR RESPONSE: We recommend one, because our change policy tests every patch before live. If none exists, we can reduce risk with VM snapshots and a rollback plan before every change, but this is not a full substitute. The staging environment is the client's cost.
+
+Q7. Which replication type do you use: transactional, merge or snapshot?
+OUR RESPONSE: We will only commit to the tasks that match your type. For example, merge conflict reports apply only to merge replication, and snapshot checks only apply to snapshot or initial sync.
+
+Q8. What do you use for disaster recovery?
+OUR RESPONSE: The Subscriber is confirmed as reporting-only, not a DR failover server, so our AMC has no failover runbook. If you want DR, we revise the AMC to add failover testing, RTO/RPO commitments and a role-switch runbook, priced as an extension.
+
+
+C. TECHNICAL AND COMPLIANCE
+
+Q9. Do you hold an Ubuntu Pro (ESM) subscription for the Ubuntu 20.04 server, and do you plan to upgrade the OS?
+OUR RESPONSE: We monitor the Ubuntu Pro/ESM subscription status under the AMC, but the subscription itself is a client cost. Without it, security patches are limited. We recommend a planned OS upgrade, which is a separate project quoted separately.
+
+Q10. Is TDE enabled, and is the sa account in use or disabled?
+OUR RESPONSE: We verify TDE status and review sa usage as part of the AMC. We recommend disabling sa if it is not required. If TDE is not enabled and you want it, we can implement it as a separate task, including certificate and key backup.
+
+Q11. What are your IDRA audit requirements, and what are your log and backup retention periods?
+OUR RESPONSE: We perform all work in line with the IDRA expectations and the NDA. We keep access logs and change records and provide them for regulatory audit on request. Retention follows your approved policy (for example 90 days). Please give us the exact figures in writing.
+
+Q12. How will we get access to the servers?
+OUR RESPONSE: Our standard is SSH key-based login only (password login disabled) and RDP through a VPN or jump host. All connections use SSH/TLS encryption. We use separate, logged credentials for production, and every action is traceable.
+
+
+D. COMMERCIAL TERMS
+
+Q13. What response and resolution times do you expect for a Sev-1 incident?
+OUR RESPONSE: Production server or database down is classified as Sev-1. Our proposal:
+ - Sev-1: response within [30 min], RCA report within 24 hours of resolution
+ - Sev-2: response within [2 hours]
+ - Sev-3: response within [next business day]
+Support hours: [business hours / extended / 24x7]. Faster response or 24x7 cover is available at a higher tier.
+
+Q14. What are the contract term, payment terms and renewal terms?
+OUR RESPONSE: We propose a 12-month term with [monthly/quarterly] billing, a [30/60]-day notice period, and an annual review of scope and fees at renewal.
+
+Q15. How should work outside the AMC be handled?
+OUR RESPONSE: Emergency visits, upgrades, migrations and scope additions are handled by change request and quoted at [rate per hour / fixed price per task] before work starts, with your approval.
+
+
+IF THE CLIENT PUSHES BACK
+
+- "Reduce the price": we reduce the scope or task frequency (for example monthly instead of weekly checks), or offer a discount in exchange for a longer term. We do not cut the safety items (backups, pre-change snapshot, post-change verification).
+- "Guarantee 100% uptime": we guarantee our response times, process and reporting. We cannot guarantee uptime on hardware, network or application layers outside our scope.
+- "Add the application layer for free": we offer it as a separate annex with its own price, or as a small trial for [1 month].
+- "We want 24x7 support": offered as a higher tier with on-call engineers, priced separately.
+- "Can you start right away?": yes, after the access, approver and retention details above are confirmed.
+
+
+
+####################################################################################################
+####################################################################################################
+
+
+
+CLIENT DISCOVERY GUIDE: FIND THEIR PROBLEM, THEN OFFER OUR BEST SERVICE
+
+STEP 1: LISTEN FIRST (ask, don't sell yet)
+
+1. What is your biggest worry about these servers today?
+2. Describe the last time something went wrong (slow reports, a crash, replication stopped). What happened and who fixed it?
+3. How long did it take to recover, and what did it cost the business?
+4. What do you check today, and how often? Who does it?
+5. Do you have backups, and have you ever tested a restore?
+6. Are the reports from the Subscriber server always up to date? Do users complain about delays?
+7. How do you apply patches today? Do you test first?
+8. Who has access to the servers, and do you know who changed what?
+9. What does your IDRA audit ask for, and have you had difficulty providing logs or proof?
+10. What would you like to stop worrying about?
+
+
+STEP 2: MATCH THEIR PROBLEM TO OUR SERVICE
+
+CLIENT SAYS...                           OUR SERVICE (from the AMC documents)
+---------------------------------------  --------------------------------------------------
+"Servers go down without warning"        Real-time alerts (CPU, disk, service-down), weekly
+                                         health checks, uptime and reboot review
+"Reports are late or out of date"        Replication monitoring: latency, agent status,
+                                         backlog checks, tracer tokens, monthly data
+                                         consistency check
+"We had an outage and never found why"   RCA within 24 hours, incident and RCA register,
+                                         OS and SQL log correlation, repeat-error trends
+"We are afraid of patching"              Test first, VM snapshot before every change, rollback
+                                         plan, change window, four-eyes approval, 60-minute
+                                         post-change check
+"Not sure our backups would work"        Backup integrity checks, monthly restore drill,
+                                         retention compliance, DBCC CHECKDB
+"Database is slow"                       Top-query review, missing/unused index review,
+                                         statistics updates, wait-stats and deadlock checks
+"Disk keeps filling up"                  Growth trend tracking, log and autogrowth
+                                         monitoring, quarterly capacity forecast
+"Worried about security"                 Account and permission review, sa review, SSH
+                                         hardening, firewall and open-port checks, failed
+                                         login review, CVE scanning
+"IDRA audit is stressful"                Access logs and change records kept and ready,
+                                         monthly security and patch compliance reports
+"Old Ubuntu 20.04 server"                Ubuntu Pro/ESM monitoring, upgrade planning advice
+"Nobody owns the whole system"           One named lead engineer across Primary, Linux and
+                                         Subscriber, one unified change calendar
+
+
+STEP 3: PROPOSE A CLEAR NEXT STEP
+
+- Offer a [30]-day assessment of all servers, with a report of findings and quick wins.
+- Show which of their problems each AMC task solves (use the table above).
+- Agree measurable targets (patch compliance, backup success, replication latency, RCA time).
+- Confirm the reports they will receive: weekly activity, monthly status, health check, security audit, patch compliance, quarterly capacity.
+
+
+STEP 4: WHAT MAKES US THE BEST CHOICE
+
+- One lead engineer and one point of contact for all three servers.
+- Safety first: backup or snapshot, rollback plan and verification on every change.
+- Proactive, not reactive: we find problems before users do.
+- Clear reporting: the client always sees what we did and what we found.
+- Honest advice: we tell the client about risks (Ubuntu 20.04 support, no staging server, no DR) even when it means extra work for them to approve.
+
+
+
+
+
+
+
+
