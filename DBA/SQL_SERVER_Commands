@@ -1,0 +1,262 @@
+/* =====================================================================
+   SQL Server 2022 - HR database admin queries (fixed version)
+   Run in SSMS. Run each section on its own (select it, then press F5).
+   Sections marked DANGEROUS are commented out on purpose.
+   ===================================================================== */
+
+
+/* ---------------------------------------------------------------------
+   1. SERVER VERSION
+   --------------------------------------------------------------------- */
+SELECT @@VERSION AS FullVersion;
+
+SELECT SERVERPROPERTY('ProductVersion') AS ProductVersion,
+       SERVERPROPERTY('ProductLevel')   AS ProductLevel,
+       SERVERPROPERTY('Edition')        AS Edition;
+GO
+
+
+/* ---------------------------------------------------------------------
+   2. CREATE DATABASE (only if it does not exist yet)
+   --------------------------------------------------------------------- */
+IF DB_ID('HR') IS NULL
+    CREATE DATABASE HR;
+GO
+
+
+/* ---------------------------------------------------------------------
+   3. SWITCH DATABASE + CHECK CURRENT DATABASE
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+SELECT DB_NAME() AS CurrentDatabase;
+GO
+
+
+/* ---------------------------------------------------------------------
+   4. SAMPLE TABLE (so the table-size queries have something to show)
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+IF OBJECT_ID('dbo.Employees', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Employees
+    (
+        EmployeeID INT IDENTITY(1,1) PRIMARY KEY,
+        FullName   NVARCHAR(100) NOT NULL,
+        Salary     DECIMAL(10,2) NULL,
+        HireDate   DATE          NULL
+    );
+
+    INSERT INTO dbo.Employees (FullName, Salary, HireDate)
+    VALUES (N'Alice Rahman', 55000, '2022-01-10'),
+           (N'Bob Karim',    48000, '2023-03-15'),
+           (N'Carol Hasan',  62000, '2021-07-01');
+END
+GO
+
+
+/* ---------------------------------------------------------------------
+   5. DATABASE SIZE
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+EXEC sp_spaceused;                    -- whole database
+EXEC sp_spaceused 'dbo.Employees';    -- one table (schema.table)
+GO
+
+
+/* ---------------------------------------------------------------------
+   6. DETAILED SIZE PER TABLE (replaces undocumented sp_MSforeachtable)
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+SELECT s.name + '.' + t.name AS TableName,
+       SUM(CASE WHEN i.index_id < 2 THEN p.rows ELSE 0 END) AS RowCnt,
+       CAST(SUM(a.total_pages) * 8.0 / 1024 AS DECIMAL(12,2)) AS TotalMB,
+       CAST(SUM(a.used_pages)  * 8.0 / 1024 AS DECIMAL(12,2)) AS UsedMB
+FROM sys.tables t
+JOIN sys.schemas s          ON t.schema_id = s.schema_id
+JOIN sys.indexes i          ON t.object_id = i.object_id
+JOIN sys.partitions p       ON i.object_id = p.object_id AND i.index_id = p.index_id
+JOIN sys.allocation_units a ON p.partition_id = a.container_id
+GROUP BY s.name, t.name
+ORDER BY TotalMB DESC;
+GO
+
+
+/* ---------------------------------------------------------------------
+   7. DATABASE FILE INFORMATION (MDF / LDF locations and size)
+   --------------------------------------------------------------------- */
+USE master;
+GO
+SELECT name          AS LogicalFileName,
+       type_desc     AS FileType,
+       physical_name AS FileLocation,
+       CAST(size * 8.0 / 1024 AS DECIMAL(12,2)) AS SizeMB
+FROM sys.master_files
+WHERE database_id = DB_ID('HR');
+GO
+
+
+/* ---------------------------------------------------------------------
+   8. LIST ALL DATABASES
+   --------------------------------------------------------------------- */
+SELECT name, state_desc, recovery_model_desc
+FROM sys.databases
+ORDER BY name;
+GO
+
+
+/* ---------------------------------------------------------------------
+   9. READ-ONLY CHECK   (is_read_only: 0 = read-write, 1 = read-only)
+   --------------------------------------------------------------------- */
+SELECT name AS DatabaseName, is_read_only
+FROM sys.databases
+WHERE name = 'HR';
+GO
+
+
+/* ---------------------------------------------------------------------
+   10. SET READ-ONLY / READ-WRITE  (run from master)
+   --------------------------------------------------------------------- */
+USE master;
+GO
+-- ALTER DATABASE HR SET READ_ONLY;
+-- ALTER DATABASE HR SET READ_WRITE;
+GO
+
+
+/* ---------------------------------------------------------------------
+   11. DATABASE STATE AND USER ACCESS MODE
+   --------------------------------------------------------------------- */
+SELECT name AS DatabaseName, state_desc, user_access_desc
+FROM sys.databases;
+GO
+
+
+/* ---------------------------------------------------------------------
+   12. ACTIVE CONNECTIONS TO HR (your own session excluded)
+   --------------------------------------------------------------------- */
+SELECT session_id, login_name, status, host_name, program_name
+FROM sys.dm_exec_sessions
+WHERE database_id = DB_ID('HR')
+  AND is_user_process = 1
+  AND session_id <> @@SPID;
+GO
+
+
+/* ---------------------------------------------------------------------
+   13. TRANSACTIONAL REPLICATION COUNTERS
+       Run on the PUBLISHER only. Returns nothing if replication is not set up.
+   --------------------------------------------------------------------- */
+EXEC sp_replcounters;
+GO
+
+
+/* ---------------------------------------------------------------------
+   14. KILL ALL CONNECTIONS  -- DANGEROUS
+       Disconnects everyone and ROLLS BACK their open transactions.
+       Always set MULTI_USER again afterwards.
+   --------------------------------------------------------------------- */
+USE master;
+GO
+-- ALTER DATABASE HR SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+-- ALTER DATABASE HR SET MULTI_USER;     -- put it back when finished
+GO
+
+
+/* ---------------------------------------------------------------------
+   15. SET DATABASE OFFLINE / ONLINE  -- DANGEROUS
+   --------------------------------------------------------------------- */
+USE master;
+GO
+-- OFFLINE
+-- ALTER DATABASE HR SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+-- ALTER DATABASE HR SET OFFLINE;
+
+-- ONLINE
+-- ALTER DATABASE HR SET ONLINE;
+-- ALTER DATABASE HR SET MULTI_USER;
+GO
+
+
+/* ---------------------------------------------------------------------
+   16. SERVER-LEVEL LOGINS  (Layer 1)
+       S = SQL login, U = Windows login, G = Windows group
+   --------------------------------------------------------------------- */
+SELECT name AS LoginName,
+       type_desc AS LoginType,
+       create_date,
+       default_database_name,
+       is_disabled
+FROM sys.server_principals
+WHERE type IN ('S', 'U', 'G')
+ORDER BY name;
+GO
+
+
+/* ---------------------------------------------------------------------
+   17. SERVER ROLE MEMBERSHIP (e.g. sysadmin)
+       Logins with no server role are not listed.
+   --------------------------------------------------------------------- */
+SELECT sp.name      AS LoginName,
+       sp.type_desc AS LoginType,
+       sr.name      AS ServerRole
+FROM sys.server_principals sp
+JOIN sys.server_role_members srm ON sp.principal_id = srm.member_principal_id
+JOIN sys.server_principals sr    ON srm.role_principal_id = sr.principal_id
+ORDER BY sr.name, sp.name;
+GO
+
+
+/* ---------------------------------------------------------------------
+   18. DATABASE USERS AND THEIR ROLES  (Layer 2) - run inside HR
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+SELECT dp.name      AS UserName,
+       dp.type_desc AS UserType,
+       dp.create_date,
+       rp.name      AS RoleName          -- NULL = user has no role
+FROM sys.database_principals dp
+LEFT JOIN sys.database_role_members drm ON dp.principal_id = drm.member_principal_id
+LEFT JOIN sys.database_principals rp    ON drm.role_principal_id = rp.principal_id
+WHERE dp.type IN ('S', 'U', 'G')
+ORDER BY dp.name;
+GO
+
+
+/* ---------------------------------------------------------------------
+   19. DATABASE PERMISSIONS  (Layer 3) - run inside HR
+       ObjectName NULL = database-level permission
+   --------------------------------------------------------------------- */
+USE HR;
+GO
+SELECT dp.name           AS PrincipalName,
+       dp.type_desc      AS PrincipalType,
+       perm.class_desc   AS PermissionClass,
+       perm.permission_name,
+       perm.state_desc   AS PermissionState,
+       OBJECT_SCHEMA_NAME(perm.major_id) + '.' + OBJECT_NAME(perm.major_id) AS ObjectName
+FROM sys.database_permissions perm
+JOIN sys.database_principals dp ON perm.grantee_principal_id = dp.principal_id
+ORDER BY dp.name, perm.permission_name;
+GO
+
+
+/* ---------------------------------------------------------------------
+   20. SQL SERVER AGENT JOBS (with readable next-run time)
+       Needs SQL Server Agent (not available in Express).
+   --------------------------------------------------------------------- */
+SELECT job.name,
+       job.enabled,
+       sch.name AS ScheduleName,
+       CASE WHEN js.next_run_date = 0 THEN NULL
+            ELSE msdb.dbo.agent_datetime(js.next_run_date, js.next_run_time)
+       END AS NextRun
+FROM msdb.dbo.sysjobs job
+LEFT JOIN msdb.dbo.sysjobschedules js ON job.job_id = js.job_id
+LEFT JOIN msdb.dbo.sysschedules sch   ON js.schedule_id = sch.schedule_id
+ORDER BY job.name;
+GO
