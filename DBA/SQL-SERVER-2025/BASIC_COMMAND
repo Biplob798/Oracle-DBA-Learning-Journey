@@ -1,0 +1,69 @@
+/*** Script for SelectTopNRows command from SSMS ***/
+select top (10) 
+[productId],
+[productName]
+from [master].[dbo].[products]
+
+
+create database DemoDB;
+drop database DemoDB;
+
+
+declare @var int = 19.2344;
+select @var
+
+
+create table products(
+productId int not null identity(1,1)  primary key, --auto generate 
+productName varchar(200) null,
+brandName varchar(200) not null,
+customerId int not null foreign key references customer (customerId)
+);
+
+
+
+
+create table customer(
+customerId int not null identity(1,1) primary key,
+customerName varchar(200) not null);
+
+
+
+alter table products 
+add productId int not null  primary key;
+
+alter table products 
+alter column receivedDate DateTime not null;
+
+alter table products
+drop column receivedDate ;
+ 
+drop table products;
+
+
+select * from products;
+
+
+insert into products( 
+productName,brandName,productId)
+values('macipad', 'apple',2);
+
+select * from products;
+
+update  products
+SET productName = 'Mobile'
+where productName='macipad';
+
+delete from products
+where productName='Mobile';
+
+
+SELECT * FROM PRODUCTS ORDER BY PRODUCTID DESC;
+
+
+
+
+
+
+
+
