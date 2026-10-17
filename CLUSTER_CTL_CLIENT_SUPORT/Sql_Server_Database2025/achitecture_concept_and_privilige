@@ -1,0 +1,33 @@
+# Create the two separate databases
+
+CREATE DATABASE d1;
+CREATE DATABASE d2;
+CREATE DATABASE d3;
+CREATE DATABASE d4;
+GO
+
+# Create the server logins
+
+
+CREATE LOGIN u1 WITH PASSWORD = 'Password123!';
+CREATE LOGIN u2 WITH PASSWORD = 'Password123!';
+GO
+
+
+# Map u1 to databases d1 and d2
+
+USE d1;
+CREATE USER u1 FOR LOGIN u1;
+
+USE d2;
+CREATE USER u1 FOR LOGIN u1;
+GO
+
+# Map u2 to databases d3 and d4
+
+USE d3;
+CREATE USER u2 FOR LOGIN u2;
+
+USE d4;
+CREATE USER u2 FOR LOGIN u2;
+GO

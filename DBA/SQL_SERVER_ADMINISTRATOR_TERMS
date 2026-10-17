@@ -1,0 +1,182 @@
+
+
+SQL SERVER ADMINISTRATOR TERMS
+
+1. BASICS
+Instance        One running copy of SQL Server (service). It can host many databases.
+Database        A container of tables, views, procedures and files.
+Schema          A namespace inside a database that groups objects (for example dbo).
+T-SQL           Transact-SQL, Microsoft's SQL language.
+SSMS            SQL Server Management Studio, the main admin tool.
+Collation       Rules for sorting and comparing text (case, accents).
+Linked Server   A connection that lets one server query another.
+Build / CU      A version number; CU = Cumulative Update (regular patch bundle).
+End of Life     The date Microsoft stops releasing security patches for a version.
+
+2. SECURITY
+Login           Server-level account that connects to the instance (Layer 1).
+User            Database-level account mapped to a login (Layer 2).
+Permission      The right to do something on an object, for example SELECT (Layer 3).
+Role            A group of permissions (db_owner, db_datareader, sysadmin).
+sa              Built-in super-admin SQL login; best disabled if not needed.
+sysadmin        Server role with full control of everything.
+Orphaned user   A database user whose login no longer exists.
+Least privilege Give only the permissions that are actually needed.
+TDE             Transparent Data Encryption: encrypts data files at rest.
+Audit           Recording who did what and when.
+
+3. FILES AND STORAGE
+MDF             Primary data file.
+NDF             Secondary data file.
+LDF             Transaction log file.
+Filegroup       A named group of data files.
+Page            8 KB, the basic unit of storage.
+Extent          8 pages (64 KB).
+Autogrowth      Automatic file growth when a file is full.
+tempdb          System database for temporary work; recreated at every restart.
+master          System database holding logins and server settings.
+msdb            System database for Agent jobs, backup history, replication cleanup.
+model           Template used when a new database is created.
+
+4. BACKUP AND RECOVERY
+Full backup         Whole database.
+Differential        Changes since the last full backup.
+Transaction log backup  Log records since the last log backup; enables point-in-time restore.
+Recovery model      FULL, SIMPLE or BULK_LOGGED; decides how the log is kept.
+Point-in-time restore   Restore to an exact moment, for example just before a mistake.
+Restore drill       A test restore on a non-production server to prove backups work.
+Checksum            Check that detects damaged backup or data pages.
+Retention           How long backups are kept.
+RPO                 Recovery Point Objective: how much data loss is acceptable.
+RTO                 Recovery Time Objective: how long recovery may take.
+DBCC CHECKDB        Checks the database for corruption.
+
+5. TRANSACTIONS AND LOCKING
+Transaction     A group of statements that succeed or fail together.
+ACID            Atomicity, Consistency, Isolation, Durability.
+Commit/Rollback Save or undo a transaction.
+Lock            Protects data while it is in use.
+Blocking        One session waits because another holds a lock.
+Deadlock        Two sessions wait on each other; SQL Server kills one.
+Isolation level How much one transaction sees of others (READ COMMITTED, SNAPSHOT).
+RCSI            Read Committed Snapshot Isolation; readers do not block writers.
+Lock escalation Many row locks converted into one table lock.
+
+6. PERFORMANCE
+Index           Structure that speeds up lookups.
+Clustered index Defines the physical order of the table (one per table).
+Nonclustered    Separate lookup structure (many per table).
+Fragmentation   Index pages out of order; fixed with REORGANIZE or REBUILD.
+Statistics      Data distribution info the optimizer uses to choose a plan.
+Execution plan  The steps SQL Server chose to run a query.
+Scan / Seek     Reading everything / jumping straight to the rows needed.
+Parameter sniffing  A plan built for one parameter value is slow for others.
+Missing index   Index SQL Server suggests would help.
+Query Store     Built-in history of queries, plans and performance.
+DMV             Dynamic Management View: live server information (sys.dm_...).
+Wait stats      What the server spends its time waiting on.
+PLE             Page Life Expectancy: how long data stays in memory (memory pressure).
+MAXDOP          Maximum degree of parallelism (CPU threads per query).
+Baseline        Normal performance numbers you compare against.
+
+7. AUTOMATION AND MONITORING
+SQL Server Agent    Service that runs scheduled jobs.
+Job                 A scheduled task (backup, index maintenance).
+Alert               Automatic notification on an error or condition.
+Operator            The person or email an alert is sent to.
+Database Mail       Feature that sends email from SQL Server.
+Maintenance plan    Wizard-built set of routine jobs.
+Error log           SQL Server's own log of events and errors.
+Extended Events     Lightweight tracing, used to capture deadlocks and slow queries.
+
+8. REPLICATION (your Primary and Subscriber servers)
+Publisher           Source server holding the original data.
+Distributor         Server holding the distribution database that passes changes along.
+Subscriber          Server receiving the data (your reporting server).
+Publication         A set of articles published together.
+Article             One published object, for example a table.
+Subscription        The link between a publication and a subscriber.
+Transactional replication  Sends changes continuously, near real time.
+Merge replication   Two-way sync with conflict handling.
+Snapshot replication Sends a full copy at intervals.
+Log Reader Agent    Reads the Publisher's log and writes changes to the distribution database.
+Distribution Agent  Delivers the changes to the Subscriber.
+Snapshot Agent      Creates the initial copy of the data.
+Tracer token        Test marker used to measure replication latency.
+Reinitialize        Re-send a full copy to the Subscriber.
+Undistributed commands  Changes waiting to be delivered (backlog).
+
+9. HIGH AVAILABILITY AND DR
+Failover            Switching to a standby server.
+Always On AG        Availability Group: databases kept in sync on several servers.
+Log shipping        Log backups copied and restored to a standby server.
+Mirroring           Older mirroring feature (deprecated).
+DR site             Backup location for disasters.
+
+10. CHANGE AND INCIDENT PROCESS (from your AMC)
+CCR                 Change Control Request.
+Maintenance window  Low-traffic time agreed for risky work.
+Four-eyes principle A second person checks critical changes.
+Rollback plan       Steps to undo a failed change.
+Sev-1               Highest severity, for example production down.
+RCA                 Root Cause Analysis report after an incident.
+Known error tracker List of recurring problems and their fixes.
+SLA                 Service Level Agreement: promised response and resolution times.
+AMC                 Annual Maintenance Contract. 
+
+
+
+################################################################################
+################################################################################
+
+
+KEY SQL SERVER TERMS FOR THE CLIENT DISCUSSION
+
+1. KEEPING THE SYSTEM RUNNING
+SQL Server Agent job   An automatic scheduled task (backups, maintenance). If a job fails, nobody notices unless we check.
+Alert                  An automatic warning when something goes wrong (disk full, service down), so we act before users complain.
+Baseline               Normal performance numbers. We compare today against them to spot problems early.
+Autogrowth             Database files growing automatically. Growth trends tell us when you will run out of disk.
+End of Life            The date a version stops getting security patches (important for Ubuntu 20.04 and the SQL Server version).
+
+2. PROTECTING YOUR DATA
+Full / Differential / Log backup   Whole copy / changes since the last full / continuous record of changes.
+Restore drill          A test restore on a non-production server. A backup is only proven when it restores.
+RPO                    How much data loss you can accept (for example 15 minutes).
+RTO                    How long you can be down while we recover.
+DBCC CHECKDB           A health check that finds hidden database corruption early.
+Retention              How long backups and logs are kept (your IDRA requirement).
+
+3. SECURITY AND COMPLIANCE
+Login / User / Permission   Three layers of access: into the server, into the database, and onto specific data.
+sa                     The built-in super-admin account. Best disabled if not needed.
+Least privilege        Everyone gets only the access they actually need.
+TDE                    Encrypts the database files, so stolen files are unreadable.
+Audit trail            Records of who did what and when, ready for IDRA audits.
+
+4. SPEED
+Index                  Like a book index; it makes searches fast.
+Fragmentation          Index disorder that slows queries; fixed by routine maintenance.
+Statistics             Information SQL Server uses to choose the fastest way to run a query. Outdated statistics cause sudden slowness.
+Blocking / Deadlock    Users or processes waiting on each other, which makes reports freeze or fail.
+Wait stats             Shows what the server is waiting on (disk, memory, locks), so we find the real bottleneck.
+
+5. REPLICATION (Primary to reporting server)
+Publisher              Primary server holding the original data.
+Distributor            Passes changes along to the reporting server.
+Subscriber             Reporting server that receives the data.
+Replication latency    The delay before changes show up in reports. This is what users notice.
+Undistributed commands Changes waiting to be delivered (a backlog means reports get stale).
+Reinitialize           Re-sending a full copy to the reporting server. It is a major action that needs a planned window.
+
+6. DISASTER RECOVERY
+Failover               Switching to a standby server when the main one fails.
+DR site                Backup location for disasters. The Subscriber is reporting-only, not a DR server.
+
+7. HOW WE WORK (change and incident process)
+Maintenance window     Low-traffic time agreed for risky work.
+Rollback plan          Steps to undo a change if it goes wrong. Always prepared first.
+Four-eyes principle    A second engineer checks critical changes.
+Sev-1                  Highest severity: production down. Gets top priority.
+RCA                    Root Cause Analysis report within 24 hours of resolution.
+SLA                    Agreed response and resolution times.
