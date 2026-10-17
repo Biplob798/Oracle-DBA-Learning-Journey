@@ -62,6 +62,13 @@ SELECT * FROM PRODUCTS ORDER BY PRODUCTID DESC;
 
 
 
+SELECT TOP 10 * FROM PRODUCTS;
+
+select distinct * from products;
+
+-- aggregate function
+
+select count(*) from products;
 
 
 
