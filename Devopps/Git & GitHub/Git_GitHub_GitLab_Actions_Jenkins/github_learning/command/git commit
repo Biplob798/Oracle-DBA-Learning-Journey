@@ -1,0 +1,19 @@
+git add . && git commit -m "add day3 data"
+
+or
+
+git add . ; git commit -m "add day3 data"
+
+git log 
+
+
+git reset --soft HEAD^ [ just undo the commit and forward to stagging area]
+git reset -- HEAD^ [uncommit recent commit and remove stagging area and forwarding working directory]
+git reset --hard HEAD^ [commit delete and go last commit]
+
+
+git reset -- HEAD^
+git reset --soft HEAD^
+
+git reset --hard HEAD^
+

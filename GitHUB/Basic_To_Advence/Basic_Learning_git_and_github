@@ -27,4 +27,19 @@ checking the difference: git diff
 
 git add . 
 
-git restore [filename]
+git restore [filename]  -- go previou where to start
+
+git restore file  [tracked files with unsaved changes (undoes your edits)]
+
+git restore --staged file  [files you staged with git add]
+
+
+git rm --cached file [files Git already tracks, to stop tracking them but keep them on disk]
+
+
+Remove-Item file  [untracked files you want gone]
+
+
+git commit -m "add commit"
+
+git log [see commit history]
