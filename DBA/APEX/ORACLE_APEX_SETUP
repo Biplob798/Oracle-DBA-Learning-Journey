@@ -1,0 +1,86 @@
+
+--for download jdk file from root user
+
+sudo yum install java-11-openjdk-devel -y
+
+--or
+
+cd /u01/app/oracle/zip_stage/
+
+
+rpm -ivh jdk-11_linux-x64_bin.rpm
+
+java -version
+
+
+--or
+su - root
+cd /u01/app/oracle/
+rpm -ivh jdk-11_linux-x64_bin.rpm
+
+--thats is folder where we move our zip file in oracle user
+
+mkdir -p /u01/app/oracle/zip_stage
+mkdir -p /u01/app/oracle/ords_home
+
+--for unzip file
+
+cd /u01/app/oracle/zip_stage
+unzip apex_24.1.zip -d /u01/app/oracle/
+
+unzip ords-24.1.0.108.0942.zip -d /u01/app/oracle/ords_home/
+
+
+
+--to go unzip file
+
+cd /u01/app/oracle/apex
+
+--or
+cd /home/oracle/apex
+
+---move to oracle user and create tablespace on oracle database for oracle apex
+
+CREATE TABLESPACE apex DATAFILE '/u01/app/oracle/oradata/DBLCLUSTER/dblclust/apex01.dbf' SIZE 100M AUTOEXTEND ON NEXT 1M;
+--or
+CREATE TABLESPACE apex DATAFILE SIZE 100M AUTOEXTEND ON NEXT 1M;
+
+--now install oracle apex
+
+@apexins.sql apex apex TEMP /i/
+
+
+--after thats we need to config our user and password 
+
+@apxchg.sql
+
+
+
+
+Username: Press Enter (defaults to ADMIN)
+
+Email: Type your administrator email address
+
+Password:  Cluster5##2026
+
+
+--Configure the APEX REST Public Users
+@apex_rest_config.sql
+
+
+
+--Unlock the Public Network Connection Accounts
+
+ALTER USER APEX_PUBLIC_USER ACCOUNT UNLOCK;
+ALTER USER APEX_PUBLIC_USER IDENTIFIED BY your_chosen_password;
+
+ALTER USER APEX_LISTENER ACCOUNT UNLOCK;
+ALTER USER APEX_REST_PUBLIC_USER ACCOUNT UNLOCK;
+
+
+
+exit
+
+
+cd /u01/app/oracle/ords_home
+ords --config /u01/app/oracle/ords_config install

@@ -1,0 +1,652 @@
+
+Thats all work in root user:
+
+
+ifconfig
+vi /etc/hosts
+
+i
+
+
+
+vp ip= 192.168.122.1
+hostname=localhost.localdomain=nursoft.com
+
+
+biplob=nur
+
+
+192.168.122.1 localhost.localdomain cluster
+
+192.168.122.255
+
+
+esc
+:wq!
+
+dnf install -y oracle-database-preinstall-19c
+dnf install -y bc
+dnf install -y binutils
+dnf install -y compat-libcap1
+dnf install -y compat-libstdc++-33
+dnf install -y dtrace-modules
+dnf install -y dtrace-modules-headers
+dnf install -y dtrace-modules-provider-headers
+dnf install -y dtrace-utils
+dnf install -y elfutils-libelf
+dnf install -y elfutils-libelf-devel
+dnf install -y fontconfig-devel
+dnf install -y glibc
+dnf install -y glibc-devel
+dnf install -y ksh
+dnf install -y libaio
+dnf install -y libaio-devel
+dnf install -y libdtrace-ctf-devel
+dnf install -y libXrender
+dnf install -y libXrender-devel
+dnf install -y libX11
+dnf install -y libXau
+dnf install -y libXi
+dnf install -y libXtst
+dnf install -y libgcc
+dnf install -y librdmacm-devel
+dnf install -y libstdc++
+dnf install -y libstdc++-devel
+dnf install -y libxcb
+dnf install -y make
+dnf install -y net-tools
+dnf install -y nfs-utils
+dnf install -y python3
+dnf install -y python3-configshell
+dnf install -y python3-rtslib
+dnf install -y python3-six
+dnf install -y targetcli
+dnf install -y smartmontools
+dnf install -y sysstat
+dnf install -y unixODBC
+dnf install -y libnsl
+dnf install -y libnsl.i686
+dnf install -y libnsl2
+dnf install -y libnsl2.i686
+
+
+--kurnel create in red hat
+
+vi /etc/sysctl.conf
+
+i
+
+fs.file-max = 6815744
+kernel.sem = 250 32000 100 128
+kernel.shmmni = 4096
+kernel.shmall = 1073741824
+kernel.shmmax = 4398046511104
+kernel.panic_on_oops = 1
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+fs.aio-max-nr = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+
+esc
+:wq!
+
+
+
+
+
+vi /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+
+i
+
+oracle   soft   nofile    1024
+oracle   hard   nofile    65536
+oracle   soft   nproc    16384
+oracle   hard   nproc    16384
+oracle   soft   stack    10240
+oracle   hard   stack    32768
+oracle   hard   memlock    134217728
+oracle   soft   memlock    134217728
+
+esc
+:wq!
+
+cat /etc/security/limits.d/oracle-database-preinstall-19c.conf
+
+
+
+yum install -y bc    
+yum install -y binutils
+yum install -y compat-libcap1
+yum install -y compat-libstdc++-33
+#yum install -y dtrace-modules
+#yum install -y dtrace-modules-headers
+#yum install -y dtrace-modules-provider-headers
+yum install -y dtrace-utils
+yum install -y elfutils-libelf
+yum install -y elfutils-libelf-devel
+yum install -y fontconfig-devel
+yum install -y glibc
+yum install -y glibc-devel
+yum install -y ksh
+yum install -y libaio
+yum install -y libaio-devel
+yum install -y libdtrace-ctf-devel
+yum install -y libXrender
+yum install -y libXrender-devel
+yum install -y libX11
+yum install -y libXau
+yum install -y libXi
+yum install -y libXtst
+yum install -y libgcc
+yum install -y librdmacm-devel
+yum install -y libstdc++
+yum install -y libstdc++-devel
+yum install -y libxcb
+yum install -y make
+yum install -y net-tools # Clusterware
+yum install -y nfs-utils # ACFS
+yum install -y python # ACFS
+yum install -y python-configshell # ACFS
+yum install -y python-rtslib # ACFS
+yum install -y python-six # ACFS
+yum install -y targetcli # ACFS
+yum install -y smartmontools
+yum install -y sysstat
+
+
+
+yum install -y gcc
+yum install -y unixODBC
+
+
+
+
+
+
+
+yum install -y binutils compat-libcap1 compat-libstdc++-33 compat-libstdc++-33.i686 gcc gcc-c++ glibc glibc.i686 glibc-devel glibc-devel.i686 ksh libaio libaio.i686 libaio-devel libaio-devel.i686 libX11 libX11.i686 libXau libXau.i686 libXi libXi.i686 libXtst libXtst.i686 libgcc libgcc.i686 libstdc++ libstdc++.i686 libstdc++-devel libstdc++-devel.i686 xorg-x11-utils make sysstat smartmontools libnsl libnsl.i686 libnsl2 libnsl2.i686
+
+alternative
+yum install -y gcc gcc-c++ make glibc-devel* libaio-devel* libX11* libXi* libXtst*
+
+
+
+
+
+
+
+dnf clean all
+dnf install -y oracle-database-preinstall-19c
+
+
+dnf localinstall -y /oracle-database-preinstall-19c-1.0-1.el8.x86_64.rpm
+
+oracle-database-preinstall-19c-1.0-1.el8.x86_64.rpm
+
+its work
+
+rpm -ivh --nodeps --nosignature /oracle-database-preinstall-19c-1.0-1.el8.x86_64.rpm
+
+id oracle
+
+
+
+
+
+groupadd -g 54321 oinstall
+groupadd -g 54322 dba
+groupadd -g 54323 oper
+
+useradd -u 54321 -g oinstall -G dba,oper oracle
+
+
+passwd oracle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# vi /etc/selinux/config
+
+i
+
+
+SELINUX=permissive
+
+
+esc
+
+:wq!
+
+
+# setenforce Permissive
+
+
+
+# systemctl stop firewalld
+# systemctl disable firewalld
+
+
+
+
+
+
+mkdir -p /u01/app/oracle/product/19.0.0/dbhome_1
+mkdir -p /u01/app/oracle/oradata
+chown -R oracle:oinstall /u01
+chown -R oracle:oinstall /u01/app/oracle/oradata
+chmod -R 775 /u01
+chmod -R 775 /u01/app/oracle/oradata
+mkdir /home/oracle/scripts
+
+
+
+cat > /home/oracle/scripts/setEnv.sh <<EOF
+export TMP=/tmp
+export TMPDIR=\$TMP
+
+export ORACLE_HOSTNAME=localhost.localdomain
+export ORACLE_UNQNAME=dblcluster
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=\$ORACLE_BASE/product/19.0.0/dbhome_1
+export ORA_INVENTORY=/u01/app/oraInventory
+export ORACLE_SID=dblclustersid
+export DATA_DIR=/u01/app/oracle/oradata
+
+export PATH=/usr/sbin:/usr/local/bin:\$PATH
+export PATH=\$ORACLE_HOME/bin:\$PATH
+
+export LD_LIBRARY_PATH=\$ORACLE_HOME/lib:/lib:/usr/lib
+export CLASSPATH=\$ORACLE_HOME/jlib:\$ORACLE_HOME/rdbms/jlib
+EOF
+
+
+
+
+
+echo ". /home/oracle/scripts/setEnv.sh" >> /home/oracle/.bash_profile
+
+
+
+cat > /home/oracle/scripts/start_all.sh <<EOF
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbstart \$ORACLE_HOME
+EOF
+
+
+_
+
+
+cat > /home/oracle/scripts/stop_all.sh <<EOF
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbshut \$ORACLE_HOME
+EOF
+
+
+
+
+
+chown -R oracle:oinstall /home/oracle/scripts
+chmod u+x /home/oracle/scripts/*.sh
+
+
+
+pwd
+
+
+unzip -oq /u01/app/oracle/product/19.0.0/dbhome_1/LINUX.X64_193000_db_home.zip
+
+unzip -oq ./LINUX.X64_193000_db_home.zip
+
+
+/u01/app/oracle/product/19.0.0/dbhome_1
+
+
+--oracle linux --
+export CV_ASSUME_DISTID=OEL7.6
+--red hat linux--
+
+export DISPLAY=localhost:10.0
+
+
+(--if graphical interface not  show then
+xhost +
+
+su - oracle
+
+export DISPLAY=localhost:10.0
+)
+
+--for oracle user pormission from root user first go root user--
+
+chown -R oracle:oinstall /u01/app/oracle/product/19.0.0/dbhome_1
+
+
+cd /u01/app/oracle/product/19.0.0/dbhome_1
+
+
+./runInstaller
+ 
+
+
+
+
+
+/u01/app/oraInventory/orainstRoot.sh
+/u01/app/oracle/product/19.0.0/dbhome_1/root.sh
+
+
+
+
+
+netmgr 
+
+
+Lvm1523 
+Lvm1524
+
+
+
+lsnrctl 
+
+
+start Lvm1523 and start Lvm1524 
+
+
+
+
+
+dbca
+
+
+
+echo "export ORACLE_SID=dblcluster" >> ~/.bash_profile
+source ~/.bash_profile
+
+
+
+
+To login database
+sqlplus sys as sysdab
+s
+exit lsnrctl
+start Lvm1523
+start Lvm1524
+exit
+export ORACLE_SID=dblcluster
+sqlplus sys as sysdba 
+s
+startup
+conn hr/hr@dblcluster
+
+for pdb open and connect
+
+
+ALTER PLUGGABLE DATABASE ALL OPEN;
+ALTER PLUGGABLE DATABASE ALL SAVE STATE;
+conn hr/hr@orclpdb
+
+
+or
+su - oracle
+sqlplus / as sysdba
+
+
+
+C:\Users\LENOVO\VirtualBox VMs\oracle_linux
+
+thats command need for download rpm package
+
+wget https://yum.oracle.com/repo/OracleLinux/OL8/baseos/latest/x86_64/getPackage/oracle-database-preinstall-19c-1.0-3.el8.x86_64.rpm
+
+thats command need for install  rpm package in linux 8 version
+
+sudo dnf localinstall oracle-database-preinstall-19c-1.0-3.el8.x86_64.rpm
+
+
+
+
+
+
+
+
+conn / as sysdba
+
+ALTER PLUGGABLE DATABASE orclpdb OPEN;
+
+SHOW PDBS;
+ALTER PLUGGABLE DATABASE orclpdb SAVE STATE;
+ALTER SESSION SET CONTAINER = orclpdb;
+
+
+
+
+
+
+
+
+
+
+ALTER USER hr IDENTIFIED BY hr ACCOUNT UNLOCK;
+
+
+
+dbsnmp db
+
+
+
+SHOW PDBS;
+
+
+ALTER PLUGGABLE DATABASE orclpdb SAVE STATE;
+
+
+ALTER SESSION SET CONTAINER = orclpdb;
+
+conn dbsnmp/db@localhost:1523/orclpdb 
+
+SELECT * FROM MGMT_DB_FEATURE_LOG;
+
+
+
+
+for download hr schema
+
+
+sqlplus / as sysdba
+
+
+
+
+ALTER SESSION SET CONTAINER = orclpdb;
+
+@?/demo/schema/human_resources/hr_main.sql
+
+
+
+
+specify password for HR as parameter 1:
+Enter value for 1: hr
+
+specify default tablespeace for HR as parameter 2:
+Enter value for 2: users
+
+specify temporary tablespace for HR as parameter 3:
+Enter value for 3: temp
+
+specify log path as parameter 4:
+Enter value for 4: /tmp/
+
+
+
+ALTER USER hr IDENTIFIED BY hr ACCOUNT UNLOCK;
+
+
+
+CONN hr/hr@localhost:1523/orclpdb
+
+
+
+sqlplus sys as sysdba
+
+startup
+
+conn hr/hr@localhost:1523/orclpdb
+
+select * from departments;
+
+
+
+
+(
+--for cdb--
+exit
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+s
+ALTER USER hr IDENTIFIED BY hr ACCOUNT UNLOCK;
+conn hr/hr
+)
+
+
+export ORACLE_SID=dblcluster
+sqlplus / as sysdba
+SHOW PDBS;
+ALTER PLUGGABLE DATABASE dblclust OPEN;
+ALTER SESSION SET CONTAINER = dblclust;
+SHOW CON_NAME;
+ALTER USER hr IDENTIFIED BY hr ACCOUNT UNLOCK;
+sqlplus hr/hr@localhost:1521/dblclust
+
+
+
+
+
+
+
+
+desktop.ini
+
+cp database.conf /tmp/
+
+
+
+sudo usermod -aG vboxsf cluster
+
+
+ip=  192.168.0.37
+
+ip=  192.168.122.1
+
+
+192.168.0.202  --cluster ip
+192.168.101.202  --db office ip
+
+
+
+mkdir /localdvd
+vi /etc/yum.repos.d/local.repo
+[local]
+name=LocalRepository
+baseurl=file:///localdvd
+enabled=1
+gpgcheck=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+
+
+
+ ll
+
+cat /etc/yum.repos.d/local.repo
+
+cd /etc/yum.repos.d/
+
+ cd -
+
+ mount -o loop rhel-server-7.9-x86_64-dvd.iso /localdvd/
+
+
+rhel-server-7.9-x86_64-dvd.iso
+
+
+
+mount rhel-server-7.9-x86_64-dvd
+
+
+
+
+--Move the ISO to a Neutral Staging Folder
+
+mv /localdvd/rhel-server-7.9-x86_64-dvd.iso /opt/
+
+
+--Run the Mount Command with the Loop Flag
+
+mount -o loop /opt/rhel-server-7.9-x86_64-dvd.iso /localdvd/
+
+ls -l /localdvd/
+
+
+
+
+biplob.islam@clustechltd.com
+Cluster5##2026
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

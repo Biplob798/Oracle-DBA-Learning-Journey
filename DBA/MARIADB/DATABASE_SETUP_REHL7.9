@@ -1,0 +1,366 @@
+Phase 1 — Local Repo Setup (already done)
+
+mkdir -p /localdvd
+mount -o loop /path/to/rhel-server-7.9-x86_64-dvd.iso /localdvd
+
+vi /etc/yum.repos.d/local.repo
+
+
+[local]
+name=LocalRepository
+baseurl=file:///localdvd
+enabled=1
+gpgcheck=0
+
+
+
+yum clean all
+yum repolist
+
+
+Phase 2 — Install OS Dependencies
+
+
+
+yum install -y libaio libaio-devel perl perl-Data-Dumper perl-DBI perl-DBD-MySQL ncurses ncurses-libs zlib
+
+
+
+Phase 4 — Create mysql user/group
+
+
+groupadd mysql
+useradd -r -g mysql -s /bin/false mysql
+
+
+Phase 5 — Prepare /u01 and extract tarball
+
+mkdir -p /u01/app
+mkdir -p /u01/software
+
+
+
+Step 4: Extract into /u01/app
+
+
+cd /u01/software
+tar -xvzf mariadb-10.5.25-linux-systemd-x86_64.tar.gz -C /u01/app/
+
+
+
+Step 1: Verify the extraction and check folder name
+
+
+cd /u01/app
+ls
+
+
+
+Step 2: Create the symlink
+
+cd /u01/app
+ln -s mariadb-10.5.25-linux-systemd-x86_64 mysql
+ls -la
+
+
+
+Step 3: Set ownership
+
+chown -R mysql:mysql /u01/app/mariadb-10.5.25-linux-systemd-x86_64
+chown -R mysql:mysql /u01/app/mysql
+
+
+Step 4: Create the data directory
+
+
+mkdir -p /u01/app/mysql/data
+chown -R mysql:mysql /u01/app/mysql/data
+
+
+Step 5: Check the install script name
+
+ls /u01/app/mysql/scripts/ | grep -i install
+
+
+Step 6: Initialize the database (run after confirming script name)
+
+cd /u01/app/mysql
+scripts/mariadb-install-db --user=mysql --basedir=/u01/app/mysql --datadir=/u01/app/mysql/data
+
+-- for check installation --
+ls -la /u01/app
+ls /u01/app/mysql/scripts/ | grep -i install
+
+
+Phase 6 — Create my.cnf configuration
+
+Step 1: Open the file
+
+vi /etc/my.cnf
+
+
+Step 2: Delete all existing content
+
+While inside vi, make sure you're not in insert mode (press Esc first to be safe), then type:
+
+:%d
+
+
+and press Enter. This deletes every line in the file. The screen should now be blank.
+
+
+Step 3: Enter insert mode
+
+Press:
+
+i
+
+
+Step 4: Paste this content
+
+
+[mysqld]
+basedir=/u01/app/mysql
+datadir=/u01/app/mysql/data
+socket=/u01/app/mysql/mysql.sock
+port=3306
+user=mysql
+
+[mysqld_safe]
+log-error=/u01/app/mysql/data/mariadb.log
+pid-file=/u01/app/mysql/data/mariadb.pid
+
+Step 5: Exit insert mode and save
+
+
+Press:
+
+Esc
+
+Then type:
+
+:wq!
+
+and press Enter. This saves and closes the file.
+
+
+Step 6: Verify
+
+cat /etc/my.cnf
+
+
+Phase 7 — Set up the systemd service
+
+Step 1: Verify mysqld binary location
+
+ls /u01/app/mysql/bin/ | grep mysqld
+
+Step 2: Create the systemd service file manually
+
+vi /etc/systemd/system/mariadb.service
+
+
+[Unit]
+Description=MariaDB 10.5.25 Database Server
+After=network.target
+
+[Service]
+Type=simple
+User=mysql
+Group=mysql
+ExecStart=/u01/app/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf
+LimitNOFILE=10000
+Restart=on-failure
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target
+
+Step 3: Reload systemd
+
+systemctl daemon-reload
+
+Step 4: Add binaries to PATH (if not done yet)
+
+
+echo 'export PATH=$PATH:/u01/app/mysql/bin' >> /etc/profile.d/mariadb.sh
+source /etc/profile.d/mariadb.sh
+
+
+
+
+Step 5: Start the service
+
+systemctl start mariadb
+systemctl status mariadb
+
+
+Step 1: Enable it to start on boot
+
+systemctl enable mariadb
+
+Step 2: Verify version
+
+/u01/app/mysql/bin/mysql --version
+
+
+Step 3: Secure the installation
+
+mysql_secure_installation
+
+Step 1: Confirm the real socket location
+
+find / -name "mysql.sock" 2>/dev/null
+
+
+
+Step 2: Create a symlink so the default path also works
+
+
+
+ln -s /u01/app/mysql/mysql.sock /tmp/mysql.sock
+
+Step 3: Now run mysql_secure_installation normally
+
+/u01/app/mysql/bin/mysql_secure_installation --basedir=/u01/app/mysql
+
+
+After that we'll do a test login:
+
+mysql -u root
+
+
+
+Recap: Export from Windows → Import to Linux
+
+
+On Windows (HeidiSQL) — Export
+Right-click the database (or select table) → Export tool → SQL export tab
+Set these options:
+Database(s): check Create (if you want the file to auto-create the DB too — optional)
+Table(s): check Create ✅
+Data: set to Insert (so actual rows get exported, not just structure)
+Output: Single .sql file
+Filename: browse/type a save path, e.g. C:\Users\mdbip\mariadb_export\hr_export.sql
+Click Export
+Confirm file exists:
+cmd
+   dir C:\Users\mdbip\mariadb_export\hr_export.sql
+Transfer — WinSCP
+Open WinSCP, connect to Linux VM
+Left = Windows folder, Right = /u01/software/
+Drag the .sql file across
+On Linux — Fix compatibility (if needed)
+
+Since your Windows MariaDB (12.3.2) is much newer than Linux (10.5.25), the dump may contain newer collations/syntax not supported on the older version. Fix with sed:
+
+bash
+cp hr_export.sql hr_export.sql.bak      # backup first
+sed -i 's/utf8mb4_uca1400_ai_ci/utf8mb4_general_ci/g' /u01/software/hr_export.sql
+
+(Check the error message each time — if a different unsupported feature appears, sed replace that instead.)
+
+On Linux — Import
+bash
+# 1. Create the database (if the dump doesn't include CREATE DATABASE)
+mysql -u root
+sql
+CREATE DATABASE hr;
+EXIT;
+bash
+# 2. Import the schema + data
+mysql -u root hr < /u01/software/hr_export.sql
+
+mysql -u root < /u01/softwareemployees.sql
+
+
+Verify
+bash
+mysql -u root
+sql
+USE hr;
+SHOW TABLES;
+SELECT * FROM employees;
+
+
+
+-- remotely connection on window machine by DBeaver --
+
+Step 1: Edit the config file
+
+vi /etc/my.cnf
+
+
+[mysqld]
+basedir=/u01/app/mysql
+datadir=/u01/app/mysql/data
+socket=/u01/app/mysql/mysql.sock
+port=3306
+user=mysql
+bind-address=0.0.0.0
+
+[mysqld_safe]
+log-error=/u01/app/mysql/data/mariadb.log
+pid-file=/u01/app/mysql/data/mariadb.pid
+
+
+Step 2: Verify the file saved correctly
+
+cat /etc/my.cnf
+
+
+Step 3: Restart MariaDB
+
+systemctl restart mariadb
+systemctl status mariadb
+
+
+Step 4: Confirm MariaDB is listening on all interfaces
+
+
+ss -tlnp | grep 3306
+
+Step 5: Open the firewall port
+
+firewall-cmd --permanent --add-port=3306/tcp
+firewall-cmd --reload
+firewall-cmd --list-ports
+
+
+Step 6: Create/confirm a remote-access MariaDB user
+
+mysql -u root
+
+
+
+CREATE USER 'remote'@'%' IDENTIFIED BY 'remote';
+GRANT ALL PRIVILEGES ON hr.* TO 'remote'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+Step 7: Get your Linux machine's IP address
+
+ip addr show
+
+
+Step 8: Connect from DBeaver (Windows)
+
+Step 1: Open DBeaver
+
+Step 2: Create new connection
+
+Click the + (plug icon) in the top-left toolbar → search MariaDB → select it → Next
+
+
+Step 3: Fill in these exact details
+
+Field	        Value
+
+Server Host	192.168.0.217
+Port		3306
+Database	hr
+Username	remote
+Password	remote
+
+

@@ -1,0 +1,8 @@
+
+# 2. Open the custom listener ports permanently
+firewall-cmd --permanent --add-port=1523/tcp
+firewall-cmd --permanent --add-port=1524/tcp
+
+# 3. Reload and confirm
+firewall-cmd --reload
+firewall-cmd --list-ports

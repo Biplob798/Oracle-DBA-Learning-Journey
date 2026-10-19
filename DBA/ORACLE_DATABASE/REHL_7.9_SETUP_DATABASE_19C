@@ -1,0 +1,35 @@
+1. add ip addrees on root user
+2. now create directory to store linux.iso file
+3.
+
+a) 
+
+mkdir /localdvd
+b) 
+
+vi /etc/yum.repos.d/local.repo
+[local]
+name=LocalRepository
+baseurl=file:///localdvd
+enabled=1
+gpgcheck=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+4.
+Esc keyword 
+:wq! for save
+
+5. [root@localhost ~]# cd /localdvd
+
+6. [root@localhost localdvd]# mount -o loop rhel-server-7.9-x86_64-dvd.iso /localdvd/
+
+
+7.
+
+yum install -y bc binutils compat-openssl11 elfutils-libelf fontconfig glibc glibc-devel glibc-headers ksh libaio libasan liblsan libX11 libXau libXi libXrender libXtst libxcrypt-compat libgcc libibverbs libnsl libnsl2 libnsl2-devel librdmacm libstdc++ libxcb libvirt-libs make policycoreutils policycoreutils-python-utils smartmontools sysstat ipmiutil net-tools nfs-utils
+
+
+
+
+
+
