@@ -43,3 +43,31 @@ Remove-Item file  [untracked files you want gone]
 git commit -m "add commit"
 
 git log [see commit history]
+
+git commit -m "add navbar feature" -m "close #1"  [Here #1 is git issue]
+
+
+git show commit_id 
+git show HEAD-Number
+git show
+.Git revert/git checkout/git reset/git clean/git rm 
+
+git log 
+git log --oneline
+
+git checkout commit_id [SWICH ONE COMMIT TO ANOTHER COMMIT TO SEE ]
+git checkout master [ go last commit stagging]
+
+git aliases [alternative of git commit shortcut]
+git config --global alias.s "status" [for set git alias]
+now we command alternative of (git status by git s)
+
+[
+  git initialize
+  adding some files
+  git add
+  git commit - commit history
+  .gitignore
+]
+
+
