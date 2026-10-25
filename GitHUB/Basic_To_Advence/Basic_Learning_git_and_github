@@ -79,3 +79,12 @@ git remoter -v: shows the remote along with the url
 syntax: git remote add name <REMOTE_URL>
 Example: git remote add orgin https://github.com/Biplob798/Oracle-DBA-Learning-Journey.git
 
+git push
+git pull
+
+git brach [check which branch currently]
+git branch dev [create branch]
+git checkout dev [swich branch]
+git branch -d dev  [remove branch]
+
+

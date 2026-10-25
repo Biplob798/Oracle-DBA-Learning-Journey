@@ -1,3 +1,5 @@
 ﻿Learning Oracle DBA step by step
 
 learn how  to create branch and merge 
+
+learn more of git branch
