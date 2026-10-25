@@ -70,4 +70,12 @@ now we command alternative of (git status by git s)
   .gitignore
 ]
 
+checke remorote connection: git remorote
+
+
+git remoter -v: shows the remote along with the url
+
+
+syntax: git remote add name <REMOTE_URL>
+Example: git remote add orgin https://github.com/Biplob798/Oracle-DBA-Learning-Journey.git
 
