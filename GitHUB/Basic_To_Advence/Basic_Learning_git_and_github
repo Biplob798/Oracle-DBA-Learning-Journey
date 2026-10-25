@@ -92,6 +92,10 @@ git push -u origin [current branch_name where we work and want to a pull request
 
 git merge dev
 
+
+
+
+
 #####################################################
 Important command for git and github all in all 
 #####################################################
