@@ -87,4 +87,4 @@ git branch dev [create branch]
 git checkout dev [swich branch]
 git branch -d dev  [remove branch]
 
-
+git push -u origin dev
