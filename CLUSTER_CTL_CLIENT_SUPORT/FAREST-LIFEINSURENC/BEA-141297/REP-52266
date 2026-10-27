@@ -1,0 +1,36 @@
+
+My Oracle Reports server 10g wasn't working properly while interacting through Oracle Forms 10g with following error:
+
+REP-52266: The in-process Reports Server rep_user failed to start.oracle.reports.RWException: IDL:oracle/reports/RWException:1.0
+
+Then I got to know about below solution from stack-overflow
+
+Search the file rwnetwork.conf
+Change the lines
+From
+
+<multicast channel="228.5.6.7" port="14021" timeout="1000" retry="5"/>
+<!--namingService name="Cos" host="127.0.0.1" port="14021"/-->
+To
+
+<!--multicast channel="228.5.6.7" port="14021" timeout="1000" retry="5"/-->
+<namingService name="Cos" host="127.0.0.1" port="14021"/>
+Start thenamingservice : namingservice 14021
+After trying all three steps successfully now I am in trouble with following error:
+
+REP-52266: The in-process Reports Server rep_user failed to start.oracle.reports.RWException: IDL:oracle/reports/RWException:1.0
+
+
+
+
+
+
+
+I have found the solution for
+
+REP-52266: The in-process Reports Server rep_user failed to start.oracle.reports.RWException: IDL:oracle/reports/RWException:1.0
+
+simply restart you Server and make sure your OC4J is not start yet (if you have your OC4J on startup then first stop that then restart your server)
+now before you open any thing go to C:\DevSuiteHome_1\reports\server\
+Now delete the file placed here "your_server_name.DAT" File
+After this now start your services of OC4J and run the Report

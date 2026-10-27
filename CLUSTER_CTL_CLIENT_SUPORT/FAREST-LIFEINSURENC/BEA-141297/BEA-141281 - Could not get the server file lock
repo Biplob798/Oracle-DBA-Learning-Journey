@@ -1,0 +1,13 @@
+36
+
+The error means that there is a file lock that could not be released, as the server was previously not shut down correctly.
+
+In this case you must follow the next steps:
+
+Navigate to tmp folder in your $DOMAIN_HOME directory. (for example: C:\Oracle\Middleware\Oracle_Home\user_projects\domains\mydomain\servers\AdminServer\tmp)
+Delete the lock file for the server instance, AdminServer.lok
+Check if there are any java.exe processes are running, which should not be there. If there are any, they would have to be killed.
+Restart your serve
+
+
+http://172.30.0.35:9002/reports/rwservlet/getserverinfo
