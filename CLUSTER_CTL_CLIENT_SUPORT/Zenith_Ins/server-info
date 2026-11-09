@@ -1,0 +1,67 @@
+product location weblogic: D:\Oracle\Middleware\Oracle_Home
+java location: C:\Program Files\Java\jdk1.8.0_281
+domain config location: D:\Oracle\Middleware\Oracle_Home\user_projects\domains\base_domain
+application location: D:\Oracle\Middleware\Oracle_Home\user_projects\applications\base_domain
+
+RCUWIN =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.3.70)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = rcuwin)
+    )
+  )
+
+PRODDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.3.80)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = proddb)
+    )
+  )
+
+mkdir /u03/HR/reports
+
+mkdir /u03/HR/forms
+
+ACC_CASH_BOOK_RPT: report=/u03/ACCOUNTS_MANAGEMENT/reports/CASH_BOOK_RPT.rdf userid=ACCOUNTS_MANAGEMENT/027546892@proddb desformat=pdf destype=cache paramform=no %*
+
+Policy no: 242009402415
+===========================
+0800000017
+
+http://192.168.3.70:9002/reports/rwservlet?report=CLAIM_LETTER.rdf&userid=system/oracle123@proddb&server=zenithrepserver1&destype=cache&desformat=PDF
+
+
+
+
+
+
+
+
+=======================
+
+v_repid 			REPORT_OBJECT;
+v_rep 				VARCHAR2(200);
+v_rep_status  VARCHAR2(200);
+v_RPT_PATH 		VARCHAR2(200);
+v_param 			VARCHAR2(200) 	:= NULL;
+v_valor 			VARCHAR2(200);
+v_url 				VARCHAR2(2000):= '';
+v_repserver 	VARCHAR2(500) 	:=''; 
+
+v_report varchar2(100) 				:= 'LEDGER_REPORT_FINAL.rdf';
+v_PARAMETRO varchar2(100) 		:= '';
+ 
+
+
+
+
+ select RPT_SERVER,RPT_URL ,RPT_PATH
+ INTO v_repserver,v_url,v_RPT_PATH
+ from HRD.report_standard 
+ WHERE MODULE='ACCOUNTS';
+ 
+ 
+  v_report 	:=v_RPT_PATH||v_report;
