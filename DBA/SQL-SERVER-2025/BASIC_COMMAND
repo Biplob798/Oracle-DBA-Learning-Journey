@@ -71,6 +71,141 @@ select distinct * from products;
 select count(*) from products;
 
 
+-- Group by clause
+
+
+CREATE TABLE Products
+(
+	ProductId int NOT NULL Identity(1,1) PRIMARY KEY,
+	ProductName VARCHAR(200) NOT NULL,
+	BrandName VARCHAR(200) NOT NULL,
+	ReceiveDate DATE NULL,
+	AvailableStock FLOAT NOT NULL,
+	Price MONEY NOT NULL
+);
+
+
+-- Delete all data
+DELETE from Products
+
+
+-- Insert new data
+INSERT INTO Products (ProductName, BrandName, ReceiveDate, 
+AvailableStock, Price)
+VALUES 
+('Logitech MX Master 3', 'Logitech', '2022-07-18', 100, 99.99),
+('Apple Magic Keyboard', 'Apple', '2022-03-28', 200, 199.99),
+('Samsung T7 Portable SSD', 'Samsung', '2022-04-15', 150, 179.99),
+('990 Pro 2TB SSD', 'Samsung', '2022-09-07', 300, 279.99),
+('Magic Mouse', 'Apple', '2022-03-28', 50, 99.99),
+('SIGNATURE K650', 'Logitech', '2022-03-28', 100, 49.99),
+('870 Evo SATA 250GB', 'Samsung', '2022-03-28', 75, 49.99),
+('MX Key Mini', 'Logitech', '2022-03-28', 200, 99.99),
+('Samsung T5 Portable SSD', 'Samsung', '2022-03-28', 100, 197.99),
+('AirTag Leasther Loop', 'Apple', '2022-03-28', 20, 39.99)
 
 
 
+
+
+-- most/less expensive product
+
+select p.BrandName,p.ProductName
+from products p 
+group by p.BrandName,p.ProductName
+
+select p.BrandName,max(p.price) [Max price],min(p.price) [Min price],sum(p.AvailableStock) [Total Stock]
+count(*)
+from products p 
+group by p.BrandName
+
+-- Having clause 
+
+SELECT 
+    p.BrandName,
+    MAX(p.price) AS [Max price],
+    MIN(p.price) AS [Min price]
+FROM products p
+GROUP BY p.BrandName
+Having sum(p.Price) < 500;
+
+
+SELECT 
+    p.BrandName,
+    MAX(p.price) AS [Max price],
+    MIN(p.price) AS [Min price]
+FROM products p
+WHERE p.AvailableStock > 100
+GROUP BY p.BrandName
+HAVING SUM(p.Price) < 500 AND AVG(p.Price) < 100;
+
+-- IF, ELSE, CASE statements
+
+
+-- if-else statement
+-- 1 => Logitech; 2 => Samsung; 3 3=> Apple;
+
+DECLARE @BrandId INT = 1;
+
+IF @BrandId = 1
+BEGIN
+    SELECT * 
+    FROM Products 
+    WHERE BrandName = 'Logitech';
+END
+ELSE IF @BrandId = 2
+BEGIN
+    SELECT * 
+    FROM Products 
+    WHERE BrandName = 'Samsung';
+END
+ELSE IF @BrandId = 3
+BEGIN
+    SELECT * 
+    FROM Products 
+    WHERE BrandName = 'Apple';
+END
+ELSE
+BEGIN
+SELECT * FROM PRODUCTS
+END;
+
+
+-- case statement
+-- Case Statement inside select
+-- price < 100 => Low
+-- 100<= price < 200 => Mid
+-- price >= 200 => High
+
+
+SELECT 
+    *, 
+    CASE 
+        WHEN Price < 100 THEN 'Low'
+        WHEN Price >= 100 AND Price < 200 THEN 'Mid'
+        ELSE 'High' 
+    END AS [Price Range]
+FROM products;
+
+
+-- Case Statement inside where clause
+-- price < 100 => Low
+-- 100<= price < 200 => Mid
+-- price >= 200 => High
+
+
+DECLARE @BrandId INT = 1;
+
+SELECT 
+    *, 
+    CASE 
+        WHEN Price < 100 THEN 'Low'
+        WHEN Price >= 100 AND Price < 200 THEN 'Mid'
+        ELSE 'High' 
+    END AS [Price Range]
+FROM products
+WHERE BrandName = CASE 
+                    WHEN @BrandId = 1 THEN 'Logitech'
+                    WHEN @BrandId = 2 THEN 'Samsung'
+                    WHEN @BrandId = 3 THEN 'Apple'
+                  END;
