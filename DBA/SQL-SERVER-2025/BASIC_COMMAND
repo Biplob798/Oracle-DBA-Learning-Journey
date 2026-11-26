@@ -209,3 +209,122 @@ WHERE BrandName = CASE
                     WHEN @BrandId = 2 THEN 'Samsung'
                     WHEN @BrandId = 3 THEN 'Apple'
                   END;
+
+
+-- working with null
+
+
+-- Create Person Table
+CREATE TABLE Person (
+  ID INT IDENTITY(1,1) PRIMARY KEY,
+  [Name] VARCHAR(50),
+  Email1 VARCHAR(100),
+  Email2 VARCHAR(100)
+);
+
+-- Insert Data
+INSERT INTO Person ([Name], Email1, Email2)
+VALUES
+  ('John Doe', 'john.doe@example.com', 'johndoe@gmail.com'),
+  ('Jane Smith', 'jane.smith@example.com', 'janesmith@gmail.com'),
+  ('Bob Johnson', NULL, 'bobjohnson@gmail.com'),
+  ('Sarah Lee', NULL, 'sarahlee@gmail.com'),
+  ('Tom Brown', 'tom.brown@example.com', NULL),
+  ('Alice Green', NULL, 'alicegreen@gmail.com'),
+  ('Mark Davis', 'mark.davis@example.com', NULL),
+  ('Lisa Wilson', NULL, 'lisawilson@gmail.com'),
+  ('Mike Taylor', 'mike.taylor@example.com', 'miketaylor@gmail.com'),
+  ('Kelly Adams', NULL, 'kellyadams@gmail.com'),
+  ('Samuel Clark', 'samuel.clark@example.com', NULL),
+  ('Emily Hall', 'emily.hall@example.com', NULL),
+  ('Jacob Brown', 'jacob.brown@example.com', 'jacobbrown@gmail.com'),
+  ('Mary White', NULL, 'marywhite@gmail.com'),
+  ('David Johnson', 'david.johnson@example.com', NULL),
+  ('Olivia Harris', 'olivia.harris@example.com', 'oliviaharris@gmail.com'),
+  ('William Davis', NULL, 'williamdavis@gmail.com'),
+  ('Chloe Allen', 'chloe.allen@example.com', 'chloeallen@gmail.com'),
+  ('Jacob Lee', 'jacob.lee@example.com', NULL),
+  ('Samantha Brown', 'samantha.brown@example.com', NULL);
+
+
+  
+-- Case Statement
+
+SELECT 
+    p.Name,
+    CASE 
+        WHEN p.email1 IS NULL THEN 'N/A' 
+        ELSE p.email1 
+    END AS [Email1],
+    CASE 
+        WHEN p.email2 IS NULL THEN 'N/A' 
+        ELSE p.email2 
+    END AS [Email2]
+FROM person p;
+
+
+
+-- Coalesce() function and Case Statement compairison [use coalesce() function to get the first non-null value from a list of expressions]
+
+SELECT 
+    [Name], 
+    COALESCE(Email1, Email2) AS email
+FROM person;
+
+
+SELECT 
+    [Name], 
+    CASE 
+        WHEN email1 IS NULL THEN email2
+        ELSE email1 
+    END AS email 
+FROM person;
+
+
+
+/*
+Function Name | Description
+--------------|-------------------------------------------------------------
+CHARINDEX     | কোন string -এ কোন ক্যারেক্টারের পজিশন রিটার্ন করে[cite: 2]
+LEN           | কোন string -এর দৈর্ঘ্য রিটার্ন করে[cite: 2]
+CONCAT        | দুইটা string যোগ করে[cite: 2]
+LOWER         | কোন string -এর সব ক্যারেক্টার কে lower case বানায়[cite: 2]
+UPPER         | কোন string -এর সব ক্যারেক্টার কে upper case বানায়[cite: 2]
+LTRIM         | বাম পাশের সব স্পেস মুছে দেয়[cite: 2]
+RTRIM         | ডান পাশের সব স্পেস মুছে দেয়[cite: 2]
+REVERSE       | কোন string কে উল্টো করে দেয়[cite: 2]
+REPLACE       | কোন string থেকে একটি অংশকে অন্য string দ্বারা replace করে[cite: 2]
+STUFF         | কোন string থেকে একটি অংশকে অন্য string দ্বারা replace করে[cite: 2]
+SUBSTRING     | কোন string এর একটা অংশ রিটার্ন করে[cite: 2]
+RIGHT         | কোন string -এর ডান পাশ থেকে কিছু ক্যারেক্টার দেখায়[cite: 2]
+LEFT          | কোন string -এর বাম পাশ থেকে কিছু ক্যারেক্টার দেখায়[cite: 2]
+*/
+
+
+-- string functions 
+-- Charindex()
+
+select charindex('k', 'Dhaka')
+select charindex('a', 'Dhaka')
+
+select charindex('a', 'Dhaka', 4)
+
+-- len()
+
+select len('Dhaka');
+
+select len('   Dhaka');
+
+select len('Dhaka    ');
+
+-- reverse() [palimdom just like aka ]
+
+select reverse('Dhaka');
+
+-- replace
+
+select replace('Dhaka', 'D' , 'B');
+
+--stuff
+
+select stuff('Dhaka', 1,3,'BK');
